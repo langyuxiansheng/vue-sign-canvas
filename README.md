@@ -1,60 +1,23 @@
-# vue-license-keyboard
+# vue-sign-canvas  功能完善中,暂不可以使用!!!!
 
-## 直接安装使用
-```
-npm i vue-license-keyboard --save
-```
-```
-import LicenseKeyboard from 'vue-license-keyboard';
-import 'vue-license-keyboard/lib/vue-license-keyboard.css';
 
-Vue.use(LicenseKeyboard);
+
+## 直接安装使用 功能完善中,暂不可以使用!!!!
 ```
-### 图片展示 输入带预览
+npm i vue-sign-canvas --save
+```
+```
+import SignCanvas from 'vue-sign-canvas';
+import 'vue-sign-canvas/lib/vue-sign-canvas.css';
+
+Vue.use(SignCanvas);
+```
+### 图片展示 
 ---
-车牌汉字输入
-![车牌汉字输入](https://github.com/langyuxiansheng/vue-license-keyboard/blob/master/images/l1.png)
-
-车牌数字输入
-![车牌数字输入](https://github.com/langyuxiansheng/vue-license-keyboard/blob/master/images/l2.png)
-
-车牌数字输入
-![车牌字母输入](https://github.com/langyuxiansheng/vue-license-keyboard/blob/master/images/l2.png)
-
 更多功能正在完善中......
 如果您有什么好的建议请留言
 
 你可以这样使用: 
-
-```
-<el-input
-slot="query-4"
-v-model.trim="table.queryData.licenseNumber"
-placeholder="车牌号"
->
-    <template slot="prepend">
-        <LicenseKeyboard v-model="table.queryData.licenseNumber" title="软键盘" />
-    </template>
-</el-input>
-```
-
-直接使用v-model 进行绑定
-
-也可以使用 @confirm="handleInput"  进行回调
-```
-methods:{
-     handleInput(value){
-        console.log('您输入的车牌为:',value);
-     }
-}
-```
-也可以使用  
-```
-<LicenseKeyboard v-model="table.queryData.licenseNumber" title="软键盘" > 
-    这里是你的自定义图标或者内容
-</LicenseKeyboard>
-```
----
 
 ```
 ## 二次开发 下载项目
