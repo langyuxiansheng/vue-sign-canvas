@@ -1,8 +1,6 @@
 .DS_Store
 node_modules/
 *.map
-*.html
-
 # local env files
 .env.local
 .env.*.local
