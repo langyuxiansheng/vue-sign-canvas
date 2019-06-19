@@ -1,0 +1,34 @@
+{
+    "name": "vue-sign-canvas",
+    "version": "1.0.4",
+    "author": "yxs",
+    "description": "一个基于vue的手写签名板,支持移动端和pc",
+    "main":"lib/vue-sign-canvas.umd.min.js",
+    "private": false,
+    "license": "MIT",
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build",
+        "lint": "vue-cli-service lint",
+        "lib": "vue-cli-service build --target lib --name vue-sign-canvas --dest lib packages/index.js"
+    },
+    "dependencies": {
+        "core-js": "^2.6.5",
+        "vue": "^2.6.10"
+    },
+    "devDependencies": {
+        "@vue/cli-plugin-babel": "^3.8.0",
+        "@vue/cli-plugin-eslint": "^3.8.0",
+        "@vue/cli-service": "^3.8.0",
+        "babel-eslint": "^10.0.1",
+        "eslint": "^5.16.0",
+        "eslint-plugin-vue": "^5.0.0",
+        "less": "^3.9.0",
+        "less-loader": "^5.0.0",
+        "vue-template-compiler": "^2.6.10"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:langyuxiansheng/vue-sign-canvas.git"
+    }
+}

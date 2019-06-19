@@ -1,0 +1,7 @@
+root = true
+[*.{js,jsx,ts,tsx,vue}]
+charset = utf-8
+indent_style = space    //使用制表符
+indent_size = 4 //4个空格为一个缩进
+trim_trailing_whitespace = true
+insert_final_newline = true
