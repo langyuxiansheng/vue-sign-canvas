@@ -1,6 +1,8 @@
-# vue-sign-canvas
+# vue-sign-canvas  功能完善中,暂不可以使用!!!!
 
-## 直接安装使用
+
+
+## 直接安装使用 功能完善中,暂不可以使用!!!!
 ```
 npm i vue-sign-canvas --save
 ```
