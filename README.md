@@ -8,7 +8,6 @@ npm i vue-sign-canvas --save
 ```
 ```
 import SignCanvas from 'vue-sign-canvas';
-import 'vue-sign-canvas/lib/vue-sign-canvas.css';
 
 Vue.use(SignCanvas);
 ```
