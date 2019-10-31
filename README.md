@@ -160,7 +160,7 @@ this.$refs.SignCanvas.saveAsImg();
 this.$refs.SignCanvas.downloadSignImg();
 
 ```
-## [在线演示](https://langyuxiansheng.github.io/vue-license-keyboard/)
+## [在线演示](https://langyuxiansheng.github.io/vue-sign-canvas/)
 ### 图片展示 
 ---
 
