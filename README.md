@@ -1,8 +1,6 @@
-# vue-sign-canvas  功能完善中,暂不可以使用!!!!
+# vue-sign-canvas 一个基于canvas开发,封装于Vue组件的通用手写签名板(电子签名板),支持pc端和移动端;
 
-
-
-## 功能完善中,暂不可以使用!!!!
+## 开始使用! 下载安装npm包
 ```bash
 npm i vue-sign-canvas --save
 ```
