@@ -1,17 +1,11 @@
 <template>
-    <div class="app-sign-canvas">
-        <canvas id="sign-canvas" width="600" height="600">
-            您的浏览器不支持canvas技术,请升级浏览器!
-        </canvas>
-        <div class="sign-btns">
-            <span id="clear">清空</span>
-            <span id="save">保存</span>
-        </div>
-    </div>
+    <canvas class="app-sign-canvas" :id="domId">
+        您的浏览器不支持canvas技术,请升级浏览器!
+    </canvas>
 </template>
 <script>
 export default {
-    name:'SignCanvas',
+    name: 'SignCanvas',
     model: {
         value: 'image',
         event: 'confirm'
@@ -23,93 +17,98 @@ export default {
             default: null
         }
     },
-    data() {
+    data () {
         return {
             value: null, //base64
-            config:{
-                canvas: null,
-                context: null,
+            domId: `sign-canvas-${Date.parse(new Date())}`,  //生成唯一dom标识
+            canvas:null,    //canvas dom对象
+            context:null,   //canvas 画布对象
+            config: {
                 isWrite: false, //是否开始
                 lastWriteTime: -1,
                 lastWriteSpeed: 1,
                 lastWriteWidth: 2,
                 canvasWidth: 600, //canvas宽高
-                canvasHeight: 600,
+                canvasHeight: 600,  //高度
                 isShowBorder: true, //是否显示网格
                 bgColor: '#fcc', //背景色
-                borderWidth: 10, // 网格线宽度
-                borderColor: "#f00", //网格颜色
+                borderWidth: 1, // 网格线宽度
+                borderColor: "#ff787f", //网格颜色
                 lastPoint: {}, //
                 writeWidth: 5, //基础轨迹宽度
                 maxWriteWidth: 30, // 写字模式最大线宽
                 minWriteWidth: 5, // 写字模式最小线宽
-                writeColor: '#0cc', // 轨迹颜色
-                isWriteName:true //签名模式
+                writeColor: '#101010', // 轨迹颜色
+                isSign: !true, //签名模式
+                imgType:'jpeg'   //下载的图片格式
             }
         };
     },
-    mounted(){
-        this.init('sign-canvas');
+    mounted () {
+        this.init(this.domId);
     },
     methods: {
-        init(id, options){
-            this.config.canvas =document.getElementById(id);
-            this.config.context = this.config.canvas.getContext("2d");
-            if(!options) return false;
-            for(const name in options) {
-               this.config[name] = options[name];
+        init (id, options) {
+            this.canvas = document.getElementById(id);
+            this.context = this.canvas.getContext("2d");
+            if (options) {
+                for (const key in options) {
+                    this.config[key] = options[key];
+                }
             }
+            this.canvasInit();
+            this.canvasClear();
         },
 
         /**
          * 轨迹宽度
          */
-        setLineWidth() {
+        setLineWidth () {
             const nowTime = new Date().getTime();
             const diffTime = nowTime - this.config.lastWriteTime;
             this.config.lastWriteTime = nowTime;
             let returnNum = this.config.minWriteWidth + (this.config.maxWriteWidth - this.config.minWriteWidth) * diffTime / 30;
-            if(returnNum < this.config.minWriteWidth) {
+            if (returnNum < this.config.minWriteWidth) {
                 returnNum = this.config.minWriteWidth;
-            } else if(returnNum > this.config.maxWriteWidth) {
+            } else if (returnNum > this.config.maxWriteWidth) {
                 returnNum = this.config.maxWriteWidth;
             }
             returnNum = returnNum.toFixed(2);
             //写字模式和签名模式
-            if(this.config.isWriteName){
-                this.config.context.lineWidth = this.config.writeWidth;
-            }else{
-                this.config.context.lineWidth = this.config.lastWriteWidth = this.config.lastWriteWidth / 4 * 3 + returnNum / 4;
+            if (this.config.isSign) {
+                this.context.lineWidth = this.config.writeWidth;
+            } else {
+                this.context.lineWidth = this.config.lastWriteWidth = this.config.lastWriteWidth / 4 * 3 + returnNum / 4;
             }
         },
 
         /**
          * 绘制轨迹
          */
-        writing(point){
-            this.config.context.beginPath();
-            this.config.context.moveTo(this.config.lastPoint.x, this.config.lastPoint.y);
-            this.config.context.lineTo(point.x, point.y);
+        writing (point) {
+            this.context.beginPath();
+            this.context.moveTo(this.config.lastPoint.x, this.config.lastPoint.y);
+            this.context.lineTo(point.x, point.y);
             this.setLineWidth();
-            this.config.context.stroke();
+            this.context.stroke();
             this.config.lastPoint = point;
-            this.config.context.closePath();
+            this.context.closePath();
         },
 
         /**
          * 轨迹样式
          */
-        writeContextStyle(){
-            this.config.context.beginPath();
-            this.config.context.strokeStyle = this.config.writeColor;
-            this.config.context.lineCap = 'round';
-            this.config.context.lineJoin = "round";
+        writeContextStyle () {
+            this.context.beginPath();
+            this.context.strokeStyle = this.config.writeColor;
+            this.context.lineCap = 'round';
+            this.context.lineJoin = "round";
         },
 
         /**
          * 写开始
          */
-        writeBegin(point){
+        writeBegin (point) {
             this.config.isWrite = true;
             this.config.lastWriteTime = new Date().getTime();
             this.config.lastPoint = point;
@@ -119,97 +118,142 @@ export default {
         /**
          * 写结束
          */
-        writeEnd(){
+        writeEnd () {
             this.config.isWrite = false;
+            this.saveAsImg();
         },
 
         /**
          * 清空画板
          */
-        canvasClear(){
-            this.config.context.save();
-            this.config.context.strokeStyle = '#fff';
-            this.config.context.clearRect(0, 0, this.config.canvasWidth, this.config.canvasHeight);
-            if(this.config.isShowBorder && !this.config.isWriteName) {
-                this.config.context.beginPath();
+        canvasClear () {
+            this.context.save();
+            this.context.strokeStyle = '#fff';
+            this.context.clearRect(0, 0, this.config.canvasWidth, this.config.canvasHeight);
+            if (this.config.isShowBorder && !this.config.isSign) {
+                this.context.beginPath();
                 let size = this.config.borderWidth / 2;
                 //画外面的框
-                this.config.context.moveTo(size, size);
-                this.config.context.lineTo(this.config.canvasWidth - size, size);
-                this.config.context.lineTo(this.config.canvasWidth - size, this.config.canvasHeight - size);
-                this.config.context.lineTo(size, this.config.canvasHeight - size);
-                this.config.context.closePath();
-                this.config.context.lineWidth = this.config.borderWidth;
-                this.config.context.strokeStyle = this.config.borderColor;
-                this.config.context.stroke();
+                this.context.moveTo(size, size);
+                this.context.lineTo(this.config.canvasWidth - size, size);
+                this.context.lineTo(this.config.canvasWidth - size, this.config.canvasHeight - size);
+                this.context.lineTo(size, this.config.canvasHeight - size);
+                this.context.closePath();
+                this.context.lineWidth = this.config.borderWidth;
+                this.context.strokeStyle = this.config.borderColor;
+                this.context.stroke();
                 //画里面的框
-                this.config.context.moveTo(0, 0);
-                this.config.context.lineTo(this.config.canvasWidth, this.config.canvasHeight);
-                this.config.context.lineTo(this.config.canvasWidth, this.config.canvasHeight / 2);
-                this.config.context.lineTo(this.config.canvasWidth, this.config.canvasHeight / 2);
-                this.config.context.lineTo(0, this.config.canvasHeight / 2);
-                this.config.context.lineTo(0, this.config.canvasHeight);
-                this.config.context.lineTo(this.config.canvasWidth, 0);
-                this.config.context.lineTo(this.config.canvasWidth / 2, 0);
-                this.config.context.lineTo(this.config.canvasWidth / 2, this.config.canvasHeight);
-                this.config.context.stroke();
+                this.context.moveTo(0, 0);
+                this.context.lineTo(this.config.canvasWidth, this.config.canvasHeight);
+                this.context.lineTo(this.config.canvasWidth, this.config.canvasHeight / 2);
+                this.context.lineTo(this.config.canvasWidth, this.config.canvasHeight / 2);
+                this.context.lineTo(0, this.config.canvasHeight / 2);
+                this.context.lineTo(0, this.config.canvasHeight);
+                this.context.lineTo(this.config.canvasWidth, 0);
+                this.context.lineTo(this.config.canvasWidth / 2, 0);
+                this.context.lineTo(this.config.canvasWidth / 2, this.config.canvasHeight);
+                this.context.stroke();
             }
-            this.config.context.restore();
+            this.$emit('confirm', null);
+            this.context.restore();
         },
 
         /**
          *  保存图片 格式base64
          */
-        saveAsImg(){
+        saveAsImg() {
             const image = new Image();
             image.src = this.canvas.toDataURL("image/png");
-            if(image.src == this.emptyCanvas) {
-                alert('请先书写')
-            } else {
-                console.log('提交的内容===>', image.src)
-            }
+            this.$emit('confirm',image.src);
+            console.log('提交的内容===>', image.src);
+            return image.src;
         },
 
         /**
          * 初始化画板
          */
-        canvasInit(){
-            this.config.canvas.width = this.config.canvasWidth;
-            this.config.canvas.height = this.config.canvasHeight;
-            this.config.emptyCanvas = this.config.canvas.toDataURL("image/png");
+        canvasInit () {
+            this.canvas.width = this.config.canvasWidth;
+            this.canvas.height = this.config.canvasHeight;
+            this.config.emptyCanvas = this.canvas.toDataURL("image/png");
+            this.bindEvent();
+        },
+
+        /**
+         * 绑定事件
+         */
+        bindEvent () {
+            //鼠标按下 => 下笔
+            this.canvas.addEventListener('mousedown', (e) => {
+                e && e.preventDefault() && e.stopPropagation();
+                this.writeBegin({ x: e.offsetX || e.clientX, y: e.offsetY || e.clientY });
+            });
+
+            //书写过程 => 下笔书写
+            this.canvas.addEventListener('mousemove', (e) => {
+                e && e.preventDefault() && e.stopPropagation();
+                this.config.isWrite && this.writing({ x: e.offsetX, y: e.offsetY });
+            });
+
+            //鼠标松开 => 提笔
+            this.canvas.addEventListener('mouseup', (e) => {
+                e && e.preventDefault() && e.stopPropagation();
+                this.writeEnd({ x: e.offsetX, y: e.offsetY });
+            });
+
+            //离开书写区域 => 提笔离开
+            this.canvas.addEventListener('mouseleave', (e) => {
+                e && e.preventDefault() && e.stopPropagation();
+                this.writeEnd({ x: e.offsetX, y: e.offsetY });
+            });
+
+            /* ==========================移动端兼容=Start================================ */
+
+            //手指按下 => 下笔
+            this.canvas.addEventListener('touchstart', (e) => {
+                e && e.preventDefault() && e.stopPropagation();
+                const touch = e.targetTouches[0];
+                this.writeBegin({ x: touch.pageX || touch.clientX, y: touch.pageY || touch.clientY });
+            });
+
+            //手指移动 => 下笔书写
+            this.canvas.addEventListener('touchmove', (e) => {
+                e && e.preventDefault() && e.stopPropagation();
+                const touch = e.targetTouches[0];
+                this.config.isWrite && this.writing({ x: touch.pageX, y: touch.pageY });
+            });
+
+            //手指移动结束 => 提笔离开
+            this.canvas.addEventListener('touchend', (e) => {
+                e && e.preventDefault() && e.stopPropagation();
+                const tcs = e.targetTouches;
+                const ccs = e.changedTouches;
+                const touch = tcs && tcs.length && tcs[0] || ccs && ccs.length && ccs[0];
+                this.writeEnd({ x: touch.pageX, y: touch.pageY });
+            });
+            /* ==========================移动端兼容=End================================ */
+        },
+
+        /**
+         * 下载二维码到本地
+         */
+        downloadSignImg(name) {
+            const c = document.getElementById(this.domId);
+            const dataURL = c.toDataURL('image/png');
+            this.saveFile(dataURL, name ? `${name}.${this.config.imgType}` : `${Date.parse(new Date())}.${this.config.imgType}`);
+        },
+
+        /**
+         * 保存文件
+         */
+        saveFile(data, filename) {
+            const saveLink = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
+            saveLink.href = data;
+            saveLink.download = filename;
+            const event = document.createEvent('MouseEvents');
+            event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            saveLink.dispatchEvent(event);
         }
-
-
-
-
-
-
-
-
     }
 };
 </script>
-<style  scoped>
-*{margin: 0;padding: 0;}
-.canvas {
-    /*width: 100%;*/
-    display: block;
-    border: 1px solid red;
-}
-#clear,
-#clear1,
-#save {
-    margin: 0 auto;
-    display: inline-block;
-    padding: 5px 10px;
-    width: 50px;
-    height: 40px;
-    line-height: 40px;
-    border: 1px solid #eee;
-    background: #e1e1e1;
-    border-radius: 10px;
-    text-align: center;
-    margin: 20px auto;
-    cursor: pointer;
-}
-</style>
