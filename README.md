@@ -3,10 +3,10 @@
 
 
 ## 功能完善中,暂不可以使用!!!!
-```
+```bash
 npm i vue-sign-canvas --save
 ```
-```
+```javascript
 //全局注册 main.js
 import SignCanvas from 'vue-sign-canvas';
 
@@ -187,29 +187,29 @@ this.$refs.SignCanvas.downloadSignImg();
 
 ## 二次开发 下载项目
 
-```
+```bash
 git clone https://github.com/langyuxiansheng/vue-sign-canvas.git
 ```
 
 ## Project setup
-```
+```bash
 cd vue-sign-canvas
 
 npm install
 ```
 
 ### Compiles and hot-reloads for development
-```
+```bash
 npm run dev
 ```
 
 ### Compiles and minifies for production
-```
+```bash
 npm run build
 ```
 
 ### Lints and fixes files
-```
+```bash
 npm run lint
 ```
 
