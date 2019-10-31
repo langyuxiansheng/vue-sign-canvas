@@ -18,12 +18,15 @@ import SignCanvas from 'vue-sign-canvas';
     components:{ SignCanvas }
 }
 ```
+
+你可以这样使用: 
+
 ### 组件模板使用
 
 ```html
 <template>
     <div id="app">
-        <sign-canvas class="sign-canvas" ref="SignCanvas" v-model="value"/>
+        <sign-canvas class="sign-canvas" ref="SignCanvas" :options="options" v-model="value"/>
         <img class="view-image" :src="value" width="150" height="150">
         <div class="sign-btns">
             <span id="clear" @click="canvasClear()">清空</span>
@@ -36,7 +39,11 @@ import SignCanvas from 'vue-sign-canvas';
 export default {
     data(){
         return {
-            value: null
+            value: null,
+            options:{
+                isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
+                isShowBorder: false, //是否显示边框 [可选]
+            }
         }
     },
     methods:{
@@ -74,6 +81,7 @@ export default {
 .sign-canvas{
     display: block;
     margin: 0 auto;
+    border: 1px dashed #f00;
 }
 .view-image{
     display: block;
@@ -120,48 +128,73 @@ props:{
 // 2. v-model [String] 可选,非必传
 
 ```
-
 1. 配置项 options 属性
 ```javascript
 {
-    lastWriteSpeed: 1,  //书写速度
-    lastWriteWidth: 2,  //下笔的宽度
-    lineCap: 'round',   //lineCap 属性设置或返回线条末端线帽的样式。   butt	默认。向线条的每个末端添加平直的边缘。round	向线条的每个末端添加圆形线帽。square	向线条的每个末端添加正方形线帽。
-    lineJoin: 'round',  //属性设置或返回所创建边角的类型，当两条线交汇时。  bevel	创建斜角。round	创建圆角。miter	默认。创建尖角。
-    canvasWidth: 600, //canvas宽高
-    canvasHeight: 600,  //高度
-    isShowBorder: true, //是否显示网格
-    bgColor: '#fcc', //背景色
-    borderWidth: 1, // 网格线宽度
-    borderColor: "#ff787f", //网格颜色
-    writeWidth: 5, //基础轨迹宽度
-    maxWriteWidth: 30, // 写字模式最大线宽
-    minWriteWidth: 5, // 写字模式最小线宽
-    writeColor: '#101010', // 轨迹颜色
+    lastWriteSpeed: 1,  //书写速度 [Number] 可选
+    lastWriteWidth: 2,  //下笔的宽度 [Number] 可选
+    lineCap: 'round',   //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square]	正方形线帽
+    lineJoin: 'round',  //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
+    canvasWidth: 600, //canvas宽高 [Number] 可选
+    canvasHeight: 600,  //高度  [Number] 可选
+    isShowBorder: true, //是否显示边框 [可选]   当签名模式处于false的时候此选项才生效
+    bgColor: '#fcc', //背景色 [String] 可选
+    borderWidth: 1, // 网格线宽度  [Number] 可选
+    borderColor: "#ff787f", //网格颜色  [String] 可选
+    writeWidth: 5, //基础轨迹宽度  [Number] 可选
+    maxWriteWidth: 30, // 写字模式最大线宽  [Number] 可选
+    minWriteWidth: 5, // 写字模式最小线宽  [Number] 可选
+    writeColor: '#101010', // 轨迹颜色  [String] 可选
     isSign: false, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
     imgType:'png'   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
 }
 ```
 
+2. 内置方法
+```javascript
+//清除画布 无返回值 [Void]
+this.$refs.SignCanvas.canvasClear(); 
 
+//清除画布 返回图片的base64编码 [String]
+this.$refs.SignCanvas.saveAsImg();
 
-
----
-
-
-
-### 图片展示 
----
-更多功能正在完善中......
-如果您有什么好的建议请留言
-
-你可以这样使用: 
+//调用内置的下载图片方法,默认将图片保存为png格式
+this.$refs.SignCanvas.downloadSignImg();
 
 ```
+## [在线演示](https://langyuxiansheng.github.io/vue-license-keyboard/)
+### 图片展示 
+---
+
+初始化展示
+![初始化展示](https://github.com/langyuxiansheng/vue-sign-canvas/blob/master/images/s1.png)
+
+非签名模式书写展示
+![非签名模式书写展示](https://github.com/langyuxiansheng/vue-sign-canvas/blob/master/images/s2.png)
+
+保存展示
+![保存展示](https://github.com/langyuxiansheng/vue-sign-canvas/blob/master/images/s3.png)
+
+下载的图片展示
+![下载的图片展示](https://github.com/langyuxiansheng/vue-sign-canvas/blob/master/images/s4.png)
+
+签名模式的图片展示
+![签名模式的图片展示](https://github.com/langyuxiansheng/vue-sign-canvas/blob/master/images/s5.png)
+
+---
+## 更多功能正在完善中......
+## 如果您有什么好的建议请留言
+
 ## 二次开发 下载项目
+
+```
+git clone https://github.com/langyuxiansheng/vue-sign-canvas.git
+```
 
 ## Project setup
 ```
+cd vue-sign-canvas
+
 npm install
 ```
 
@@ -173,11 +206,6 @@ npm run dev
 ### Compiles and minifies for production
 ```
 npm run build
-```
-
-### Run your tests
-```
-npm run test
 ```
 
 ### Lints and fixes files

@@ -31,25 +31,22 @@ export default {
             canvas:null,    //canvas dom对象
             context:null,   //canvas 画布对象
             config: {
-                isWrite: false, //是否开始 内置基础属性
-                lastWriteTime: -1,  //时间
-                lastWriteSpeed: 1,  //书写速度
-                lastWriteWidth: 2,  //下笔的宽度
-                lineCap: 'round',   //lineCap 属性设置或返回线条末端线帽的样式。   butt	默认。向线条的每个末端添加平直的边缘。round	向线条的每个末端添加圆形线帽。square	向线条的每个末端添加正方形线帽。
-                lineJoin: 'round',  //属性设置或返回所创建边角的类型，当两条线交汇时。  bevel	创建斜角。round	创建圆角。miter	默认。创建尖角。
-                canvasWidth: 600, //canvas宽高
-                canvasHeight: 600,  //高度
-                isShowBorder: true, //是否显示网格
-                bgColor: '#fcc', //背景色
-                borderWidth: 1, // 网格线宽度
-                borderColor: "#ff787f", //网格颜色
-                lastPoint: {}, //内置基础属性
-                writeWidth: 5, //基础轨迹宽度
-                maxWriteWidth: 30, // 写字模式最大线宽
-                minWriteWidth: 5, // 写字模式最小线宽
-                writeColor: '#101010', // 轨迹颜色
-                isSign: false, //签名模式
-                imgType:'png'   //下载的图片格式
+                lastWriteSpeed: 1,  //书写速度 [Number] 可选
+                lastWriteWidth: 2,  //下笔的宽度 [Number] 可选
+                lineCap: 'round',   //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square]	正方形线帽
+                lineJoin: 'round',  //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
+                canvasWidth: 600, //canvas宽高 [Number] 可选
+                canvasHeight: 600,  //高度  [Number] 可选
+                isShowBorder: true, //是否显示边框 [可选]
+                bgColor: '#fcc', //背景色 [String] 可选
+                borderWidth: 1, // 网格线宽度  [Number] 可选
+                borderColor: "#ff787f", //网格颜色  [String] 可选
+                writeWidth: 5, //基础轨迹宽度  [Number] 可选
+                maxWriteWidth: 30, // 写字模式最大线宽  [Number] 可选
+                minWriteWidth: 5, // 写字模式最小线宽  [Number] 可选
+                writeColor: '#101010', // 轨迹颜色  [String] 可选
+                isSign: false, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
+                imgType:'png'   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
             }
         };
     },
@@ -140,9 +137,9 @@ export default {
             this.context.save();
             this.context.strokeStyle = this.config.writeColor;
             this.context.clearRect(0, 0, this.config.canvasWidth, this.config.canvasHeight);
-            if (this.config.isShowBorder && !this.config.isSign) {
-                this.context.beginPath();
-                let size = this.config.borderWidth / 2;
+            this.context.beginPath();
+            let size = this.config.borderWidth / 2;
+            if(this.config.isShowBorder){
                 //画外面的框
                 this.context.moveTo(size, size);
                 this.context.lineTo(this.config.canvasWidth - size, size);
@@ -152,6 +149,8 @@ export default {
                 this.context.lineWidth = this.config.borderWidth;
                 this.context.strokeStyle = this.config.borderColor;
                 this.context.stroke();
+            }
+            if (this.config.isShowBorder && !this.config.isSign) {
                 //画里面的框
                 this.context.moveTo(0, 0);
                 this.context.lineTo(this.config.canvasWidth, this.config.canvasHeight);

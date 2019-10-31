@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <sign-canvas class="sign-canvas" ref="SignCanvas" v-model="value"/>
+        <sign-canvas class="sign-canvas" ref="SignCanvas" :options="options" v-model="value"/>
         <img class="view-image" :src="value" width="150" height="150">
         <div class="sign-btns">
             <span id="clear" @click="canvasClear()">清空</span>
@@ -13,7 +13,11 @@
 export default {
     data(){
         return {
-            value: null
+            value: null,
+            options:{
+                isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
+                isShowBorder: false, //是否显示边框 [可选]
+            }
         }
     },
     methods:{
@@ -51,6 +55,7 @@ export default {
 .sign-canvas{
     display: block;
     margin: 0 auto;
+    border: 1px dashed #f00;
 }
 .view-image{
     display: block;
