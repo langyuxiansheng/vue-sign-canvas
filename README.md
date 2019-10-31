@@ -211,5 +211,10 @@ npm run build
 npm run lint
 ```
 
+## 缺陷 & 后期计划
+
+> 目前还没有撤销回到上一步的操作,一旦输入错了就只有清除重写了(这个是之前去银行的时候,那个签名板是这样设计的);
+> 如果有需要还是可以考虑加上回到上一步的方法.
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
