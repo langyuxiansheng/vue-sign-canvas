@@ -1,17 +1,19 @@
-# vue-sign-canvas 一个基于canvas开发,封装于Vue组件的通用手写签名板(电子签名板),支持pc端和移动端;
+# sign-canvas 一个基于canvas开发,封装于Vue组件的通用手写签名板(电子签名板),支持pc端和移动端;
+
+#### ┭┮﹏┭┮ 因为 vue-sign-canvas 的包名被占用了,只好去掉一个前缀了....
 
 ## 开始使用! 下载安装npm包
 ```bash
-npm i vue-sign-canvas --save
+npm i sign-canvas --save
 ```
 ```javascript
 //全局注册 main.js
-import SignCanvas from 'vue-sign-canvas';
+import SignCanvas from 'sign-canvas';
 
 Vue.use(SignCanvas);
 
 //或者局部注册
-import SignCanvas from 'vue-sign-canvas';
+import SignCanvas from 'sign-canvas';
 {
     components:{ SignCanvas }
 }
