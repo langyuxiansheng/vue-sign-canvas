@@ -15,7 +15,14 @@ export default {
             required: false,
             type: [String],
             default: null
-        }
+        },
+
+        options: {  //配置项
+            required: false,
+            type: [Object],
+            default: () => null
+        },
+
     },
     data () {
         return {
@@ -24,33 +31,36 @@ export default {
             canvas:null,    //canvas dom对象
             context:null,   //canvas 画布对象
             config: {
-                isWrite: false, //是否开始
-                lastWriteTime: -1,
-                lastWriteSpeed: 1,
-                lastWriteWidth: 2,
+                isWrite: false, //是否开始 内置基础属性
+                lastWriteTime: -1,  //时间
+                lastWriteSpeed: 1,  //书写速度
+                lastWriteWidth: 2,  //下笔的宽度
+                lineCap: 'round',   //lineCap 属性设置或返回线条末端线帽的样式。   butt	默认。向线条的每个末端添加平直的边缘。round	向线条的每个末端添加圆形线帽。square	向线条的每个末端添加正方形线帽。
+                lineJoin: 'round',  //属性设置或返回所创建边角的类型，当两条线交汇时。  bevel	创建斜角。round	创建圆角。miter	默认。创建尖角。
                 canvasWidth: 600, //canvas宽高
                 canvasHeight: 600,  //高度
                 isShowBorder: true, //是否显示网格
                 bgColor: '#fcc', //背景色
                 borderWidth: 1, // 网格线宽度
                 borderColor: "#ff787f", //网格颜色
-                lastPoint: {}, //
+                lastPoint: {}, //内置基础属性
                 writeWidth: 5, //基础轨迹宽度
                 maxWriteWidth: 30, // 写字模式最大线宽
                 minWriteWidth: 5, // 写字模式最小线宽
                 writeColor: '#101010', // 轨迹颜色
-                isSign: !true, //签名模式
-                imgType:'jpeg'   //下载的图片格式
+                isSign: false, //签名模式
+                imgType:'png'   //下载的图片格式
             }
         };
     },
     mounted () {
-        this.init(this.domId);
+        this.init();
     },
     methods: {
-        init (id, options) {
-            this.canvas = document.getElementById(id);
+        init () {
+            this.canvas = document.getElementById(this.domId);
             this.context = this.canvas.getContext("2d");
+            const options = this.options;
             if (options) {
                 for (const key in options) {
                     this.config[key] = options[key];
@@ -101,8 +111,8 @@ export default {
         writeContextStyle () {
             this.context.beginPath();
             this.context.strokeStyle = this.config.writeColor;
-            this.context.lineCap = 'round';
-            this.context.lineJoin = "round";
+            this.context.lineCap = this.config.lineCap;
+            this.context.lineJoin = this.config.lineJoin;
         },
 
         /**
@@ -128,7 +138,7 @@ export default {
          */
         canvasClear () {
             this.context.save();
-            this.context.strokeStyle = '#fff';
+            this.context.strokeStyle = this.config.writeColor;
             this.context.clearRect(0, 0, this.config.canvasWidth, this.config.canvasHeight);
             if (this.config.isShowBorder && !this.config.isSign) {
                 this.context.beginPath();
