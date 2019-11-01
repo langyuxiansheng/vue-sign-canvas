@@ -12,11 +12,6 @@ import SignCanvas from 'sign-canvas';
 
 Vue.use(SignCanvas);
 
-//或者局部注册
-import SignCanvas from 'sign-canvas';
-{
-    components:{ SignCanvas }
-}
 ```
 
 你可以这样使用: 
