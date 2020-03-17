@@ -174,7 +174,6 @@ export default {
             const image = new Image();
             image.src = this.canvas.toDataURL("image/png");
             this.$emit('confirm',image.src);
-            console.log('提交的内容===>', image.src);
             return image.src;
         },
 
@@ -225,8 +224,6 @@ export default {
                 const getBCR = touch.target.getBoundingClientRect();
                 let x = touch.pageX ? touch.pageX - getBCR.left : touch.clientX;
                 let y = touch.pageY ? touch.pageY - getBCR.top : touch.clientY;
-                console.log('touch.pageX',touch.pageX,'touch.pageY',touch.pageY);
-                console.log(x,y);
                 this.writeBegin({ x, y});
             });
 
