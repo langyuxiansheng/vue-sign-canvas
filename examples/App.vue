@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <sign-canvas class="sign-canvas" ref="SignCanvas" :options="options" v-model="value"/>
-        <img class="view-image" :src="value" width="150" height="150">
+        <img v-if="value" class="view-image" :src="value" width="150" height="150">
         <div class="sign-btns">
             <span id="clear" @click="canvasClear()">清空</span>
             <span id="save" @click="saveAsImg()">保存</span>
@@ -15,6 +15,8 @@ export default {
         return {
             value: null,
             options:{
+                canvasWidth: 350, //canvas宽高 [Number] 可选
+                canvasHeight: 370,  //高度  [Number] 可选
                 isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
                 isShowBorder: false, //是否显示边框 [可选]
             }
@@ -47,14 +49,14 @@ export default {
     }
 }
 </script>
-<style lang="less" scoped>
+<style lang="less">
 * {
     margin: 0;
     padding: 0;
 }
 .sign-canvas{
     display: block;
-    margin: 0 auto;
+    margin: 20px auto;
     border: 1px dashed #f00;
 }
 .view-image{
@@ -62,17 +64,15 @@ export default {
     margin: 20px auto;
 }
 .sign-btns{
-    width: 800px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     #clear,
     #clear1,
     #save {
-        margin: 0 auto;
         display: inline-block;
         padding: 5px 10px;
-        width: 150px;
+        width: 100px;
         height: 40px;
         line-height: 40px;
         border: 1px solid #eee;

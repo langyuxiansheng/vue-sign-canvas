@@ -222,14 +222,22 @@ export default {
             this.canvas.addEventListener('touchstart', (e) => {
                 e && e.preventDefault() && e.stopPropagation();
                 const touch = e.targetTouches[0];
-                this.writeBegin({ x: touch.pageX || touch.clientX, y: touch.pageY || touch.clientY });
+                const getBCR = touch.target.getBoundingClientRect();
+                let x = touch.pageX ? touch.pageX - getBCR.left : touch.clientX;
+                let y = touch.pageY ? touch.pageY - getBCR.top : touch.clientY;
+                console.log('touch.pageX',touch.pageX,'touch.pageY',touch.pageY);
+                console.log(x,y);
+                this.writeBegin({ x, y});
             });
 
             //手指移动 => 下笔书写
             this.canvas.addEventListener('touchmove', (e) => {
                 e && e.preventDefault() && e.stopPropagation();
                 const touch = e.targetTouches[0];
-                this.config.isWrite && this.writing({ x: touch.pageX, y: touch.pageY });
+                const getBCR = touch.target.getBoundingClientRect();
+                let x = touch.pageX ? touch.pageX - getBCR.left : touch.clientX;
+                let y = touch.pageY ? touch.pageY - getBCR.top : touch.clientY;
+                this.config.isWrite && this.writing({ x, y });
             });
 
             //手指移动结束 => 提笔离开
