@@ -12,6 +12,11 @@ import SignCanvas from 'sign-canvas';
 
 Vue.use(SignCanvas);
 
+//局部注册 
+import SC from 'sign-canvas';
+
+components:{ SignCanvas:SC.SignCanvas }
+
 ```
 
 你可以这样使用: 
@@ -215,6 +220,8 @@ npm run lint
 
 
 ## 更新日志
+
+> v1.0.4 修复增加局部注册引入方式。
 
 > v1.0.3 修复“在移动端时,如果<sign-canvas>标签距离左侧有间距, 画笔和绘制的内容有偏移 #4”的bug，感谢网友“tzy19920902”的bug反馈见及修复建议。
 
