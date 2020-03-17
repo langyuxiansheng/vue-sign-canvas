@@ -155,10 +155,10 @@ props:{
 //清除画布 无返回值 [Void]
 this.$refs.SignCanvas.canvasClear(); 
 
-//清除画布 返回图片的base64编码 [String]
+//获取base图片 返回图片的base64编码 [String]
 this.$refs.SignCanvas.saveAsImg();
 
-//调用内置的下载图片方法,默认将图片保存为png格式
+//下载图片到本地, 调用内置的下载图片方法,默认将图片保存为png格式(经测试在部分微信内置浏览器中无效)
 this.$refs.SignCanvas.downloadSignImg();
 
 ```
@@ -223,7 +223,7 @@ npm run lint
 
 > v1.0.4 修复增加局部注册引入方式。
 
-> v1.0.3 修复“在移动端时,如果<sign-canvas>标签距离左侧有间距, 画笔和绘制的内容有偏移 #4”的bug，感谢网友“tzy19920902”的bug反馈见及修复建议。
+> v1.0.3 修复“在移动端时,如果<sign-canvas>标签距离左侧有间距, 画笔和绘制的内容有偏移 #4”的bug，感谢网友“xiaohuyahappy ”和“tzy19920902”的bug反馈见及修复建议。
 
 > v1.0.2 兼容移动端的可用性
 
