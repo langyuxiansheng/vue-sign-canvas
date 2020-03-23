@@ -56,7 +56,6 @@ export default {
     methods: {
         init () {
             this.canvas = document.getElementById(this.domId);
-            console.log(this.canvas)
             this.context = this.canvas.getContext("2d");
             const options = this.options;
             if (options) {
