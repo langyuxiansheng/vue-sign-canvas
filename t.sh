@@ -6,12 +6,12 @@ npm run build;
 echo "打包 插件lib";
 
 # 打包 插件
-npm run lib;
+# npm run lib;
 
-echo "推送到npmjs";
+# echo "推送到npmjs";
 
-#推送到npmjs
-npm publish;
+# #推送到npmjs
+# npm publish;
 
 # 更新gh-pages
 echo "更新gh-pages";
