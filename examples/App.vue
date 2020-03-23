@@ -2,7 +2,6 @@
     <div id="app">
         <h2 class="title">Vue Sign Canvas</h2>
         <sign-canvas class="sign-canvas" ref="SignCanvas" :options="options" v-model="value"/>
-        <sign-canvas class="sign-canvas" ref="SignCanvas" :options="options" v-model="value"/>
         <img v-if="value" class="view-image" :src="value" width="150" height="150">
         <div class="sign-btns">
             <span id="clear" @click="canvasClear()">清空</span>
