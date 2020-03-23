@@ -27,7 +27,7 @@ export default {
     data () {
         return {
             value: null, //base64
-            domId: `sign-canvas-${Date.parse(new Date())}`,  //生成唯一dom标识
+            domId: `sign-canvas-${Math.random().toString(36).substr(2)}`,  //生成唯一dom标识
             canvas:null,    //canvas dom对象
             context:null,   //canvas 画布对象
             config: {
@@ -56,6 +56,7 @@ export default {
     methods: {
         init () {
             this.canvas = document.getElementById(this.domId);
+            console.log(this.canvas)
             this.context = this.canvas.getContext("2d");
             const options = this.options;
             if (options) {
@@ -125,8 +126,9 @@ export default {
         /**
          * 写结束
          */
-        writeEnd () {
+        writeEnd (point) {
             this.config.isWrite = false;
+            this.config.lastPoint = point;
             this.saveAsImg();
         },
 
@@ -221,9 +223,11 @@ export default {
             this.canvas.addEventListener('touchstart', (e) => {
                 e && e.preventDefault() && e.stopPropagation();
                 const touch = e.targetTouches[0];
-                const getBCR = touch.target.getBoundingClientRect();
-                let x = touch.pageX ? touch.pageX - getBCR.left : touch.clientX;
-                let y = touch.pageY ? touch.pageY - getBCR.top : touch.clientY;
+                // const getBCR = touch.target.getBoundingClientRect();
+                const offsetLeft = touch.target.offsetLeft;
+                const offsetTop = touch.target.offsetTop;
+                let x = touch.pageX ? touch.pageX - offsetLeft : touch.clientX;
+                let y = touch.pageY ? touch.pageY - offsetTop : touch.clientY;
                 this.writeBegin({ x, y});
             });
 
@@ -231,9 +235,10 @@ export default {
             this.canvas.addEventListener('touchmove', (e) => {
                 e && e.preventDefault() && e.stopPropagation();
                 const touch = e.targetTouches[0];
-                const getBCR = touch.target.getBoundingClientRect();
-                let x = touch.pageX ? touch.pageX - getBCR.left : touch.clientX;
-                let y = touch.pageY ? touch.pageY - getBCR.top : touch.clientY;
+                const offsetLeft = touch.target.offsetLeft;
+                const offsetTop = touch.target.offsetTop;
+                let x = touch.pageX ? touch.pageX - offsetLeft : touch.clientX;
+                let y = touch.pageY ? touch.pageY - offsetTop : touch.clientY;
                 this.config.isWrite && this.writing({ x, y });
             });
 
@@ -243,7 +248,11 @@ export default {
                 const tcs = e.targetTouches;
                 const ccs = e.changedTouches;
                 const touch = tcs && tcs.length && tcs[0] || ccs && ccs.length && ccs[0];
-                this.writeEnd({ x: touch.pageX, y: touch.pageY });
+                const offsetLeft = touch.target.offsetLeft;
+                const offsetTop = touch.target.offsetTop;
+                let x = touch.pageX ? touch.pageX - offsetLeft : touch.clientX;
+                let y = touch.pageY ? touch.pageY - offsetTop : touch.clientY;
+                this.writeEnd({ x, y });
             });
             /* ==========================移动端兼容=End================================ */
         },
