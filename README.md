@@ -221,6 +221,8 @@ npm run lint
 
 ## 更新日志
 
+> v1.0.7 修复定位下的轨迹偏移,受position属性的影响的bug。感谢网友“gexiaoyun” 和 “xingguyue”的反馈。
+
 > v1.0.6 修复多个canvas无法同时存在的bug,修复移动端滚动后影响绘制轨迹的bug。感谢网友“hytao2017”的反馈。
 
 > v1.0.5 优化部分代码。

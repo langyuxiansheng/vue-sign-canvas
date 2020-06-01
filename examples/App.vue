@@ -2,6 +2,9 @@
     <div id="app">
         <h2 class="title">Vue Sign Canvas</h2>
         <sign-canvas class="sign-canvas" ref="SignCanvas" :options="options" v-model="value"/>
+        <!-- <div class="sign-box">
+            <sign-canvas class="sign-canvas" ref="SignCanvas" :options="options" v-model="value"/>
+        </div> -->
         <img v-if="value" class="view-image" :src="value" width="150" height="150">
         <div class="sign-btns">
             <span id="clear" @click="canvasClear()">清空</span>
@@ -59,6 +62,11 @@ export default {
     padding: 20px;
     text-align: center;
 }
+// .sign-box{
+//     position: absolute;
+//     top: 300px;
+//     left: 30px;
+// }
 .sign-canvas{
     display: block;
     margin: 20px auto;
@@ -69,7 +77,6 @@ export default {
     margin: 20px auto;
 }
 .sign-btns{
-    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     #clear,
@@ -77,7 +84,7 @@ export default {
     #save {
         display: inline-block;
         padding: 5px 10px;
-        width: 100px;
+        width: 76px;
         height: 40px;
         line-height: 40px;
         border: 1px solid #eee;
