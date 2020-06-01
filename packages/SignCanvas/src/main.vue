@@ -223,8 +223,10 @@ export default {
                 e && e.preventDefault() && e.stopPropagation();
                 const touch = e.targetTouches[0];
                 // const getBCR = touch.target.getBoundingClientRect();
-                const offsetLeft = touch.target.offsetLeft;
-                const offsetTop = touch.target.offsetTop;
+                const offsetLeft = this.offset(touch.target,'left');
+                const offsetTop = this.offset(touch.target,'top');
+                // const offsetLeft =  touch.target.offsetLeft;
+                // const offsetTop = touch.target.offsetTop;
                 let x = touch.pageX ? touch.pageX - offsetLeft : touch.clientX;
                 let y = touch.pageY ? touch.pageY - offsetTop : touch.clientY;
                 this.writeBegin({ x, y});
@@ -234,10 +236,13 @@ export default {
             this.canvas.addEventListener('touchmove', (e) => {
                 e && e.preventDefault() && e.stopPropagation();
                 const touch = e.targetTouches[0];
-                const offsetLeft = touch.target.offsetLeft;
-                const offsetTop = touch.target.offsetTop;
+                const offsetLeft = this.offset(touch.target,'left');
+                const offsetTop = this.offset(touch.target,'top');
+                // const offsetLeft = touch.target.offsetLeft;
+                // const offsetTop = touch.target.offsetTop;
                 let x = touch.pageX ? touch.pageX - offsetLeft : touch.clientX;
                 let y = touch.pageY ? touch.pageY - offsetTop : touch.clientY;
+                console.log(touch)
                 this.config.isWrite && this.writing({ x, y });
             });
 
@@ -247,8 +252,10 @@ export default {
                 const tcs = e.targetTouches;
                 const ccs = e.changedTouches;
                 const touch = tcs && tcs.length && tcs[0] || ccs && ccs.length && ccs[0];
-                const offsetLeft = touch.target.offsetLeft;
-                const offsetTop = touch.target.offsetTop;
+                const offsetLeft = this.offset(touch.target,'left');
+                const offsetTop = this.offset(touch.target,'top');
+                // const offsetLeft = touch.target.offsetLeft;
+                // const offsetTop = touch.target.offsetTop;
                 let x = touch.pageX ? touch.pageX - offsetLeft : touch.clientX;
                 let y = touch.pageY ? touch.pageY - offsetTop : touch.clientY;
                 this.writeEnd({ x, y });
@@ -275,6 +282,21 @@ export default {
             const event = document.createEvent('MouseEvents');
             event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
             saveLink.dispatchEvent(event);
+        },
+
+        /**
+         * 获取dom对象的偏移量 可以获取解决position定位的问题
+         */
+        offset(obj, direction) {
+            //将top,left首字母大写,并拼接成offsetTop,offsetLeft
+            const offsetDir = 'offset'+ direction[0].toUpperCase()+direction.substring(1);
+            let realNum = obj[offsetDir];
+            let positionParent = obj.offsetParent;  //获取上一级定位元素对象
+            while(positionParent != null){
+                realNum += positionParent[offsetDir];
+                positionParent = positionParent.offsetParent;
+            }
+            return realNum;
         }
     }
 };
