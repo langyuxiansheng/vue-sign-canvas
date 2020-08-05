@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <h2 class="title">Vue Sign Canvas</h2>
+        <h2 class="title">Vue Sign Canvas 电子签名板</h2>
         <sign-canvas class="sign-canvas" ref="SignCanvas" :options="options" v-model="value"/>
         <img v-if="value" class="view-image" :src="value" width="150" height="150">
         <div class="config">
@@ -71,7 +71,9 @@
     </div>
 </template>
 <script>
+import SignCanvas from '../packages';
 export default {
+    components:{SignCanvas},
     data(){
         return {
             value: null,
