@@ -77,6 +77,8 @@ export default {
             this.canvas = document.getElementById(this.domId);
             this.context = this.canvas.getContext("2d");
             this.canvas.style.backgorund = this.config.bgColor;
+            this.canvas.height = this.config.canvasWidth;
+            this.canvas.width = this.config.canvasHeight;
             const options = this.options;
             if (options) {
                 for (const key in options) {
@@ -194,7 +196,7 @@ export default {
          */
         saveAsImg() {
             const image = new Image();
-            image.src = this.canvas.toDataURL("image/png");
+            image.src = this.canvas.toDataURL(`image/${this.config.imgType}`);
             this.$emit('confirm',image.src);
             return image.src;
         },
@@ -205,7 +207,7 @@ export default {
         canvasInit () {
             this.canvas.width = this.config.canvasWidth;
             this.canvas.height = this.config.canvasHeight;
-            this.config.emptyCanvas = this.canvas.toDataURL("image/png");
+            this.config.emptyCanvas = this.canvas.toDataURL(`image/${this.config.imgType}`);
         },
 
         /**
@@ -233,7 +235,8 @@ export default {
          * 离开书写区域 => 提笔离开
          */
         handleMouseleave(e){
-            this.writeEnd({ x: e.offsetX, y: e.offsetY });
+            this.config.isWrite = false;
+            this.config.lastPoint = { x: e.offsetX, y: e.offsetY };
         },
 
         /* ==========================移动端兼容=Start================================ */
@@ -243,8 +246,9 @@ export default {
          */
         handleTouchstart(e){
             const touch = e.targetTouches[0];
-            let x = touch.pageX ? touch.pageX - this.getRect().left : touch.clientX;
-            let y = touch.pageY ? touch.pageY - this.getRect().top  : touch.clientY;
+            const x = touch.clientX ? touch.clientX - this.getRect().left :  touch.pageX - this.offset(touch.target,'left');
+            const y = touch.clientY ? touch.clientY - this.getRect().top  : touch.pageY - this.offset(touch.target,'top');
+            console.log( x, y)
             this.writeBegin({ x, y});
         },
 
@@ -253,9 +257,8 @@ export default {
          */
         handleTouchmove(e){
             const touch = e.targetTouches[0];
-            const offsetTop = this.offset(touch.target,'top');
-            let x = touch.pageX ? touch.pageX - this.getRect().left : touch.clientX;
-            let y = touch.pageY ? touch.pageY - this.getRect().top : touch.clientY;
+            const x = touch.clientX ? touch.clientX - this.getRect().left :  touch.pageX - this.offset(touch.target,'left');
+            const y = touch.clientY ? touch.clientY - this.getRect().top  : touch.pageY - this.offset(touch.target,'top');
             this.config.isWrite && this.writing({ x, y });
         },
 
@@ -266,8 +269,8 @@ export default {
             const tcs = e.targetTouches;
             const ccs = e.changedTouches;
             const touch = tcs && tcs.length && tcs[0] || ccs && ccs.length && ccs[0];
-            let x = touch.pageX ? touch.pageX - this.getRect().left : touch.clientX;
-            let y = touch.pageY ? touch.pageY - this.getRect().top  : touch.clientY;
+            const x = touch.clientX ? touch.clientX - this.getRect().left :  touch.pageX - this.offset(touch.target,'left');
+            const y = touch.clientY ? touch.clientY - this.getRect().top  : touch.pageY - this.offset(touch.target,'top');
             this.writeEnd({ x, y });
         },
 
@@ -301,7 +304,6 @@ export default {
         getRect() {
             return this.$refs[this.domId].getBoundingClientRect();
         },
-
 
         /**
          * 获取dom对象的偏移量 可以获取解决position定位的问题

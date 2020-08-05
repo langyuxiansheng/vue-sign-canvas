@@ -15,7 +15,7 @@
                     </span>
                 </li>
                 <li class="li-c">
-                    <span class="item-label">显示网格:</span>
+                    <span class="item-label">显示边框/网格:</span>
                     <span class="item-content">
                         <select name="isSign" v-model="options.isShowBorder">
                             <option :value="true">显示</option>
@@ -138,6 +138,23 @@ export default {
 .view-image{
     display: block;
     margin: 20px auto;
+}
+.config{
+    width: 350px;
+    margin: 20px auto;
+    .ul-config{
+        .li-c{
+            display: flex;
+            align-items: center;
+            padding: 4px 10px;
+            .item-label{
+                font-size: 14px;
+            }
+            .item-content{
+                margin-left: 10px;
+            }
+        }
+    }
 }
 .sign-btns{
     display: flex;
