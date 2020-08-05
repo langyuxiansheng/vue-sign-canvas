@@ -1,5 +1,14 @@
 <template>
-    <canvas class="app-sign-canvas" :id="domId">
+    <canvas
+        :ref="domId"
+        class="app-sign-canvas" :id="domId"
+        @mousedown.prevent.stop="handleMousedown"
+        @mousemove.prevent.stop="handleMousemove"
+        @mouseup.prevent.stop="handleMouseup"
+        @mouseleave.prevent.stop="handleMouseleave"
+        @touchstart.prevent.stop="handleTouchstart"
+        @touchmove.prevent.stop="handleTouchmove"
+        @touchend.prevent.stop="handleTouchend">
         您的浏览器不支持canvas技术,请升级浏览器!
     </canvas>
 </template>
@@ -53,16 +62,30 @@ export default {
     mounted () {
         this.init();
     },
+
+    watch:{
+        options:{
+            handler(){
+                this.init();
+            },
+            deep: true
+        }
+    },
+
     methods: {
         init () {
             this.canvas = document.getElementById(this.domId);
             this.context = this.canvas.getContext("2d");
+            this.canvas.style.backgorund = this.config.bgColor;
+            this.canvas.height = this.config.canvasWidth;
+            this.canvas.width = this.config.canvasHeight;
             const options = this.options;
             if (options) {
                 for (const key in options) {
                     this.config[key] = options[key];
                 }
             }
+            console.log(this.config);
             this.canvasInit();
             this.canvasClear();
         },
@@ -173,7 +196,7 @@ export default {
          */
         saveAsImg() {
             const image = new Image();
-            image.src = this.canvas.toDataURL("image/png");
+            image.src = this.canvas.toDataURL(`image/${this.config.imgType}`);
             this.$emit('confirm',image.src);
             return image.src;
         },
@@ -184,84 +207,74 @@ export default {
         canvasInit () {
             this.canvas.width = this.config.canvasWidth;
             this.canvas.height = this.config.canvasHeight;
-            this.config.emptyCanvas = this.canvas.toDataURL("image/png");
-            this.bindEvent();
+            this.config.emptyCanvas = this.canvas.toDataURL(`image/${this.config.imgType}`);
         },
 
         /**
-         * 绑定事件
+         * 鼠标按下 => 下笔
          */
-        bindEvent () {
-            //鼠标按下 => 下笔
-            this.canvas.addEventListener('mousedown', (e) => {
-                e && e.preventDefault() && e.stopPropagation();
-                this.writeBegin({ x: e.offsetX || e.clientX, y: e.offsetY || e.clientY });
-            });
-
-            //书写过程 => 下笔书写
-            this.canvas.addEventListener('mousemove', (e) => {
-                e && e.preventDefault() && e.stopPropagation();
-                this.config.isWrite && this.writing({ x: e.offsetX, y: e.offsetY });
-            });
-
-            //鼠标松开 => 提笔
-            this.canvas.addEventListener('mouseup', (e) => {
-                e && e.preventDefault() && e.stopPropagation();
-                this.writeEnd({ x: e.offsetX, y: e.offsetY });
-            });
-
-            //离开书写区域 => 提笔离开
-            this.canvas.addEventListener('mouseleave', (e) => {
-                e && e.preventDefault() && e.stopPropagation();
-                this.writeEnd({ x: e.offsetX, y: e.offsetY });
-            });
-
-            /* ==========================移动端兼容=Start================================ */
-
-            //手指按下 => 下笔
-            this.canvas.addEventListener('touchstart', (e) => {
-                e && e.preventDefault() && e.stopPropagation();
-                const touch = e.targetTouches[0];
-                // const getBCR = touch.target.getBoundingClientRect();
-                const offsetLeft = this.offset(touch.target,'left');
-                const offsetTop = this.offset(touch.target,'top');
-                // const offsetLeft =  touch.target.offsetLeft;
-                // const offsetTop = touch.target.offsetTop;
-                let x = touch.pageX ? touch.pageX - offsetLeft : touch.clientX;
-                let y = touch.pageY ? touch.pageY - offsetTop : touch.clientY;
-                this.writeBegin({ x, y});
-            });
-
-            //手指移动 => 下笔书写
-            this.canvas.addEventListener('touchmove', (e) => {
-                e && e.preventDefault() && e.stopPropagation();
-                const touch = e.targetTouches[0];
-                const offsetLeft = this.offset(touch.target,'left');
-                const offsetTop = this.offset(touch.target,'top');
-                // const offsetLeft = touch.target.offsetLeft;
-                // const offsetTop = touch.target.offsetTop;
-                let x = touch.pageX ? touch.pageX - offsetLeft : touch.clientX;
-                let y = touch.pageY ? touch.pageY - offsetTop : touch.clientY;
-                console.log(touch)
-                this.config.isWrite && this.writing({ x, y });
-            });
-
-            //手指移动结束 => 提笔离开
-            this.canvas.addEventListener('touchend', (e) => {
-                e && e.preventDefault() && e.stopPropagation();
-                const tcs = e.targetTouches;
-                const ccs = e.changedTouches;
-                const touch = tcs && tcs.length && tcs[0] || ccs && ccs.length && ccs[0];
-                const offsetLeft = this.offset(touch.target,'left');
-                const offsetTop = this.offset(touch.target,'top');
-                // const offsetLeft = touch.target.offsetLeft;
-                // const offsetTop = touch.target.offsetTop;
-                let x = touch.pageX ? touch.pageX - offsetLeft : touch.clientX;
-                let y = touch.pageY ? touch.pageY - offsetTop : touch.clientY;
-                this.writeEnd({ x, y });
-            });
-            /* ==========================移动端兼容=End================================ */
+        handleMousedown(e){
+            this.writeBegin({ x: e.offsetX || e.clientX, y: e.offsetY || e.clientY });
         },
+
+        /**
+         * 书写过程 => 下笔书写
+         */
+        handleMousemove(e){
+            this.config.isWrite && this.writing({ x: e.offsetX, y: e.offsetY });
+        },
+
+        /**
+         * 鼠标松开 => 提笔
+         */
+        handleMouseup(e){
+            this.writeEnd({ x: e.offsetX, y: e.offsetY });
+        },
+
+        /**
+         * 离开书写区域 => 提笔离开
+         */
+        handleMouseleave(e){
+            this.config.isWrite = false;
+            this.config.lastPoint = { x: e.offsetX, y: e.offsetY };
+        },
+
+        /* ==========================移动端兼容=Start================================ */
+
+        /**
+         * 手指按下 => 下笔
+         */
+        handleTouchstart(e){
+            const touch = e.targetTouches[0];
+            const x = touch.clientX ? touch.clientX - this.getRect().left :  touch.pageX - this.offset(touch.target,'left');
+            const y = touch.clientY ? touch.clientY - this.getRect().top  : touch.pageY - this.offset(touch.target,'top');
+            console.log( x, y)
+            this.writeBegin({ x, y});
+        },
+
+        /**
+         * 手指移动 => 下笔书写
+         */
+        handleTouchmove(e){
+            const touch = e.targetTouches[0];
+            const x = touch.clientX ? touch.clientX - this.getRect().left :  touch.pageX - this.offset(touch.target,'left');
+            const y = touch.clientY ? touch.clientY - this.getRect().top  : touch.pageY - this.offset(touch.target,'top');
+            this.config.isWrite && this.writing({ x, y });
+        },
+
+        /**
+         * 手指移动结束 => 提笔离开
+         */
+        handleTouchend(e){
+            const tcs = e.targetTouches;
+            const ccs = e.changedTouches;
+            const touch = tcs && tcs.length && tcs[0] || ccs && ccs.length && ccs[0];
+            const x = touch.clientX ? touch.clientX - this.getRect().left :  touch.pageX - this.offset(touch.target,'left');
+            const y = touch.clientY ? touch.clientY - this.getRect().top  : touch.pageY - this.offset(touch.target,'top');
+            this.writeEnd({ x, y });
+        },
+
+        /* ==========================移动端兼容=End================================== */
 
         /**
          * 下载二维码到本地
@@ -285,7 +298,16 @@ export default {
         },
 
         /**
+         * 获取画布的元素的大小及其相对于视口的位置
+         * @return {}
+         */
+        getRect() {
+            return this.$refs[this.domId].getBoundingClientRect();
+        },
+
+        /**
          * 获取dom对象的偏移量 可以获取解决position定位的问题
+         * @returns number
          */
         offset(obj, direction) {
             //将top,left首字母大写,并拼接成offsetTop,offsetLeft

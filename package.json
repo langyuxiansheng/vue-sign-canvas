@@ -1,6 +1,6 @@
 {
     "name": "sign-canvas",
-    "version": "1.0.7",
+    "version": "1.1.0",
     "author": "yxs",
     "description": "一个基于canvas和vue的手写签名板,支持移动端和PC 可以直接下载图片和转成base64编码",
     "main":"lib/sign-canvas.umd.min.js",
