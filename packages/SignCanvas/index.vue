@@ -47,7 +47,7 @@ export default {
                 canvasWidth: 600, //canvas宽高 [Number] 可选
                 canvasHeight: 600,  //高度  [Number] 可选
                 isShowBorder: true, //是否显示边框 [可选]
-                bgColor: '#fcc', //背景色 [String] 可选
+                bgColor: '#fcc', //背景色 [String] 可选 注:这背景色仅仅只是canvas背景,保存的图片仍然是透明的
                 borderWidth: 1, // 网格线宽度  [Number] 可选
                 borderColor: "#ff787f", //网格颜色  [String] 可选
                 writeWidth: 5, //基础轨迹宽度  [Number] 可选
@@ -74,17 +74,17 @@ export default {
 
     methods: {
         init () {
-            this.canvas = document.getElementById(this.domId);
-            this.context = this.canvas.getContext("2d");
-            this.canvas.style.background = this.config.bgColor;
-            this.canvas.height = this.config.canvasWidth;
-            this.canvas.width = this.config.canvasHeight;
             const options = this.options;
             if (options) {
                 for (const key in options) {
                     this.config[key] = options[key];
                 }
             }
+            this.canvas = document.getElementById(this.domId);
+            this.context = this.canvas.getContext("2d");
+            this.canvas.style.background = this.config.bgColor;
+            this.canvas.height = this.config.canvasWidth;
+            this.canvas.width = this.config.canvasHeight;
             this.canvasInit();
             this.canvasClear();
         },

@@ -105,18 +105,18 @@ export default {
                 lastWriteSpeed: 1,  //书写速度 [Number] 可选
                 lastWriteWidth: 2,  //下笔的宽度 [Number] 可选
                 lineCap: 'round',   //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square]	正方形线帽
-                lineJoin: 'bevel',  //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
-                canvasWidth: 350, //canvas宽高 [Number] 可选
-                canvasHeight: 370,  //高度  [Number] 可选
+                lineJoin: 'round',  //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
+                canvasWidth: 600, //canvas宽高 [Number] 可选
+                canvasHeight: 600,  //高度  [Number] 可选
                 isShowBorder: true, //是否显示边框 [可选]
-                bgColor: '#fcc', //背景色 [String] 可选
+                bgColor: '#fcc', //背景色 [String] 可选 注:这背景色仅仅只是canvas背景,保存的图片仍然是透明的
                 borderWidth: 1, // 网格线宽度  [Number] 可选
                 borderColor: "#ff787f", //网格颜色  [String] 可选
                 writeWidth: 5, //基础轨迹宽度  [Number] 可选
                 maxWriteWidth: 30, // 写字模式最大线宽  [Number] 可选
                 minWriteWidth: 5, // 写字模式最小线宽  [Number] 可选
                 writeColor: '#101010', // 轨迹颜色  [String] 可选
-                isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
+                isSign: false, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
                 imgType:'png'   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
             }
         }
@@ -312,6 +312,9 @@ npm run lint
 
 
 ## 更新日志
+
+
+> v1.1.2 优化部分逻辑代码.
 
 > v1.1.1 修复background 拼写错误,感谢网友"shady-xia"的反馈和建议.
 
