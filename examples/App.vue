@@ -30,6 +30,12 @@
                     </span>
                 </li>
                 <li class="li-c">
+                    <span class="item-label">图片类型:</span>
+                    <span class="item-content">
+                        <input v-model="options.imgType" type="text">
+                    </span>
+                </li>
+                <li class="li-c">
                     <span class="item-label">线条的边缘类型:</span>
                     <span class="item-content">
                         <select name="lineCap" v-model="options.lineCap">
