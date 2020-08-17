@@ -76,7 +76,7 @@ export default {
         init () {
             this.canvas = document.getElementById(this.domId);
             this.context = this.canvas.getContext("2d");
-            this.canvas.style.backgorund = this.config.bgColor;
+            this.canvas.style.background = this.config.bgColor;
             this.canvas.height = this.config.canvasWidth;
             this.canvas.width = this.config.canvasHeight;
             const options = this.options;
@@ -85,7 +85,6 @@ export default {
                     this.config[key] = options[key];
                 }
             }
-            console.log(this.config);
             this.canvasInit();
             this.canvasClear();
         },
@@ -248,7 +247,6 @@ export default {
             const touch = e.targetTouches[0];
             const x = touch.clientX ? touch.clientX - this.getRect().left :  touch.pageX - this.offset(touch.target,'left');
             const y = touch.clientY ? touch.clientY - this.getRect().top  : touch.pageY - this.offset(touch.target,'top');
-            console.log( x, y)
             this.writeBegin({ x, y});
         },
 

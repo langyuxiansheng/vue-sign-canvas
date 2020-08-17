@@ -41,18 +41,3 @@ git push origin -d gh-pages;
 git subtree push --prefix dist origin gh-pages;
 
 echo "已推送gh-pages";
-
-# 推送完成后切换回master
-git checkout master; 
-
-echo "切换回master";
-
-git add .;
-
-git commit -m "更新lib包";
-
-git pull;
-
-git push;
-
-echo "完成";
