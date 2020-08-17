@@ -76,7 +76,7 @@ export default {
         init () {
             this.canvas = document.getElementById(this.domId);
             this.context = this.canvas.getContext("2d");
-            this.canvas.style.backgorund = this.config.bgColor;
+            this.canvas.style.background = this.config.bgColor;
             this.canvas.height = this.config.canvasWidth;
             this.canvas.width = this.config.canvasHeight;
             const options = this.options;
