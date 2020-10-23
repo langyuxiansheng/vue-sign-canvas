@@ -24,6 +24,21 @@
                     </span>
                 </li>
                 <li class="li-c">
+                    <span class="item-label">兼容高分屏高清绘制:</span>
+                    <span class="item-content">
+                        <select name="isSign" v-model="options.isDpr">
+                            <option :value="true">启用</option>
+                            <option :value="false">关闭</option>
+                        </select>
+                    </span>
+                </li>
+                <li class="li-c">
+                    <span class="item-label">边框宽度:</span>
+                    <span class="item-content">
+                        <input v-model="options.borderWidth" type="number">
+                    </span>
+                </li>
+                <li class="li-c">
                     <span class="item-label">下笔宽度:</span>
                     <span class="item-content">
                         <input v-model="options.writeWidth" type="number">
@@ -84,6 +99,7 @@ export default {
         return {
             value: null,
             options:{
+                isDpr: false,       //是否使用dpr兼容高分屏 [Boolean] 可选
                 lastWriteSpeed: 1,  //书写速度 [Number] 可选
                 lastWriteWidth: 2,  //下笔的宽度 [Number] 可选
                 lineCap: 'round',   //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square]	正方形线帽

@@ -39,7 +39,9 @@ export default {
             domId: `sign-canvas-${Math.random().toString(36).substr(2)}`,  //生成唯一dom标识
             canvas:null,    //canvas dom对象
             context:null,   //canvas 画布对象
+            dpr: 1,
             config: {
+                isDpr: false,       //是否使用dpr兼容高分屏 [Boolean] 可选
                 lastWriteSpeed: 1,  //书写速度 [Number] 可选
                 lastWriteWidth: 2,  //下笔的宽度 [Number] 可选
                 lineCap: 'round',   //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square]	正方形线帽
@@ -80,6 +82,7 @@ export default {
                     this.config[key] = options[key];
                 }
             }
+            this.dpr = typeof window !== 'undefined' && this.config.isDpr ? window.devicePixelRatio || window.webkitDevicePixelRatio || window.mozDevicePixelRatio || 1 : 1;
             this.canvas = document.getElementById(this.domId);
             this.context = this.canvas.getContext("2d");
             this.canvas.style.background = this.config.bgColor;
@@ -105,33 +108,11 @@ export default {
             returnNum = returnNum.toFixed(2);
             //写字模式和签名模式
             if (this.config.isSign) {
-                this.context.lineWidth = this.config.writeWidth;
+                this.context.lineWidth = this.config.writeWidth * this.dpr;
             } else {
-                this.context.lineWidth = this.config.lastWriteWidth = this.config.lastWriteWidth / 4 * 3 + returnNum / 4;
+                const lineWidth = this.config.lastWriteWidth = this.config.lastWriteWidth / 4 * 3 + returnNum / 4
+                this.context.lineWidth = lineWidth * this.dpr;
             }
-        },
-
-        /**
-         * 绘制轨迹
-         */
-        writing (point) {
-            this.context.beginPath();
-            this.context.moveTo(this.config.lastPoint.x, this.config.lastPoint.y);
-            this.context.lineTo(point.x, point.y);
-            this.setLineWidth();
-            this.context.stroke();
-            this.config.lastPoint = point;
-            this.context.closePath();
-        },
-
-        /**
-         * 轨迹样式
-         */
-        writeContextStyle () {
-            this.context.beginPath();
-            this.context.strokeStyle = this.config.writeColor;
-            this.context.lineCap = this.config.lineCap;
-            this.context.lineJoin = this.config.lineJoin;
         },
 
         /**
@@ -145,6 +126,19 @@ export default {
         },
 
         /**
+         * 绘制轨迹
+         */
+        writing (point) {
+            this.context.beginPath();
+            this.context.moveTo(this.config.lastPoint.x * this.dpr, this.config.lastPoint.y * this.dpr);
+            this.context.lineTo(point.x * this.dpr, point.y * this.dpr);
+            this.setLineWidth();
+            this.context.stroke();
+            this.config.lastPoint = point;
+            this.context.closePath();
+        },
+
+         /**
          * 写结束
          */
         writeEnd (point) {
@@ -154,36 +148,46 @@ export default {
         },
 
         /**
+         * 轨迹样式
+         */
+        writeContextStyle () {
+            this.context.beginPath();
+            this.context.strokeStyle = this.config.writeColor;
+            this.context.lineCap = this.config.lineCap;
+            this.context.lineJoin = this.config.lineJoin;
+        },
+
+
+        /**
          * 清空画板
          */
         canvasClear () {
             this.context.save();
             this.context.strokeStyle = this.config.writeColor;
-            this.context.clearRect(0, 0, this.config.canvasWidth, this.config.canvasHeight);
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.context.beginPath();
-            let size = this.config.borderWidth / 2;
+            this.context.lineWidth = this.config.borderWidth * this.dpr;
+            this.context.strokeStyle = this.config.borderColor;
+            let size = this.config.borderWidth / 2 * this.dpr;
             if(this.config.isShowBorder){
                 //画外面的框
                 this.context.moveTo(size, size);
-                this.context.lineTo(this.config.canvasWidth - size, size);
-                this.context.lineTo(this.config.canvasWidth - size, this.config.canvasHeight - size);
-                this.context.lineTo(size, this.config.canvasHeight - size);
+                this.context.lineTo(this.canvas.width - size, size);
+                this.context.lineTo(this.canvas.width - size, this.canvas.height - size);
+                this.context.lineTo(size, this.canvas.height - size);
                 this.context.closePath();
-                this.context.lineWidth = this.config.borderWidth;
-                this.context.strokeStyle = this.config.borderColor;
                 this.context.stroke();
             }
             if (this.config.isShowBorder && !this.config.isSign) {
                 //画里面的框
                 this.context.moveTo(0, 0);
-                this.context.lineTo(this.config.canvasWidth, this.config.canvasHeight);
-                this.context.lineTo(this.config.canvasWidth, this.config.canvasHeight / 2);
-                this.context.lineTo(this.config.canvasWidth, this.config.canvasHeight / 2);
-                this.context.lineTo(0, this.config.canvasHeight / 2);
-                this.context.lineTo(0, this.config.canvasHeight);
-                this.context.lineTo(this.config.canvasWidth, 0);
-                this.context.lineTo(this.config.canvasWidth / 2, 0);
-                this.context.lineTo(this.config.canvasWidth / 2, this.config.canvasHeight);
+                this.context.lineTo(this.canvas.width, this.canvas.height);
+                this.context.lineTo(this.canvas.width, this.canvas.height / 2);
+                this.context.lineTo(0, this.canvas.height / 2);
+                this.context.lineTo(0, this.canvas.height);
+                this.context.lineTo(this.canvas.width, 0);
+                this.context.lineTo(this.canvas.width / 2, 0);
+                this.context.lineTo(this.canvas.width / 2, this.canvas.height);
                 this.context.stroke();
             }
             this.$emit('confirm', null);
@@ -204,8 +208,10 @@ export default {
          * 初始化画板
          */
         canvasInit () {
-            this.canvas.width = this.config.canvasWidth;
-            this.canvas.height = this.config.canvasHeight;
+            this.canvas.width = this.config.canvasWidth * this.dpr;
+            this.canvas.height = this.config.canvasHeight * this.dpr;
+            this.canvas.style.width = `${this.config.canvasWidth}px`;
+            this.canvas.style.height = `${this.config.canvasHeight}px`;
             this.config.emptyCanvas = this.canvas.toDataURL(`image/${this.config.imgType}`);
         },
 

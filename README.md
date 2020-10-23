@@ -2,6 +2,8 @@
 
 #### ┭┮﹏┭┮ 因为 vue-sign-canvas 的包名被占用了,只好去掉一个前缀了.... 假如此轮子对你有帮助,请顺手star一下吧.o(*￣︶￣*)o
 
+#### 更多文章和技术推文，请关注微信公众号"笔优站长",有问题也可以及时反馈哦！
+
 ## 开始使用! 下载安装npm包
 ```bash
 npm i sign-canvas --save
@@ -50,9 +52,30 @@ components:{ SignCanvas }
                     </span>
                 </li>
                 <li class="li-c">
+                    <span class="item-label">兼容高倍屏高清绘制:</span>
+                    <span class="item-content">
+                        <select name="isSign" v-model="options.isDpr">
+                            <option :value="true">启用</option>
+                            <option :value="false">关闭</option>
+                        </select>
+                    </span>
+                </li>
+                <li class="li-c">
+                    <span class="item-label">边框宽度:</span>
+                    <span class="item-content">
+                        <input v-model="options.borderWidth" type="number">
+                    </span>
+                </li>
+                <li class="li-c">
                     <span class="item-label">下笔宽度:</span>
                     <span class="item-content">
                         <input v-model="options.writeWidth" type="number">
+                    </span>
+                </li>
+                <li class="li-c">
+                    <span class="item-label">图片类型:</span>
+                    <span class="item-content">
+                        <input v-model="options.imgType" type="text">
                     </span>
                 </li>
                 <li class="li-c">
@@ -97,26 +120,29 @@ components:{ SignCanvas }
     </div>
 </template>
 <script>
+import SignCanvas from '../packages';
 export default {
+    components:{SignCanvas},
     data(){
         return {
             value: null,
             options:{
+                isDpr: false,       //是否使用dpr兼容高倍屏 [Boolean] 可选
                 lastWriteSpeed: 1,  //书写速度 [Number] 可选
                 lastWriteWidth: 2,  //下笔的宽度 [Number] 可选
                 lineCap: 'round',   //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square]	正方形线帽
-                lineJoin: 'round',  //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
-                canvasWidth: 600, //canvas宽高 [Number] 可选
-                canvasHeight: 600,  //高度  [Number] 可选
+                lineJoin: 'bevel',  //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
+                canvasWidth: 350, //canvas宽高 [Number] 可选
+                canvasHeight: 370,  //高度  [Number] 可选
                 isShowBorder: true, //是否显示边框 [可选]
-                bgColor: '#fcc', //背景色 [String] 可选 注:这背景色仅仅只是canvas背景,保存的图片仍然是透明的
+                bgColor: '#fcc', //背景色 [String] 可选
                 borderWidth: 1, // 网格线宽度  [Number] 可选
                 borderColor: "#ff787f", //网格颜色  [String] 可选
                 writeWidth: 5, //基础轨迹宽度  [Number] 可选
                 maxWriteWidth: 30, // 写字模式最大线宽  [Number] 可选
                 minWriteWidth: 5, // 写字模式最小线宽  [Number] 可选
                 writeColor: '#101010', // 轨迹颜色  [String] 可选
-                isSign: false, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
+                isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
                 imgType:'png'   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
             }
         }
@@ -223,13 +249,14 @@ props:{
 1. 配置项 options 属性
 ```javascript
 {
+    isDpr: false,       //是否使用dpr兼容高倍屏 [Boolean] 可选
     lastWriteSpeed: 1,  //书写速度 [Number] 可选
     lastWriteWidth: 2,  //下笔的宽度 [Number] 可选
     lineCap: 'round',   //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square]	正方形线帽
-    lineJoin: 'round',  //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
-    canvasWidth: 600, //canvas宽高 [Number] 可选
-    canvasHeight: 600,  //高度  [Number] 可选
-    isShowBorder: true, //是否显示边框 [可选]   当签名模式处于false的时候此选项才生效
+    lineJoin: 'bevel',  //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
+    canvasWidth: 350, //canvas宽高 [Number] 可选
+    canvasHeight: 370,  //高度  [Number] 可选
+    isShowBorder: true, //是否显示边框 [可选]
     bgColor: '#fcc', //背景色 [String] 可选
     borderWidth: 1, // 网格线宽度  [Number] 可选
     borderColor: "#ff787f", //网格颜色  [String] 可选
@@ -237,7 +264,7 @@ props:{
     maxWriteWidth: 30, // 写字模式最大线宽  [Number] 可选
     minWriteWidth: 5, // 写字模式最小线宽  [Number] 可选
     writeColor: '#101010', // 轨迹颜色  [String] 可选
-    isSign: false, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
+    isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
     imgType:'png'   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
 }
 ```
@@ -313,6 +340,7 @@ npm run lint
 
 ## 更新日志
 
+> v1.1.3 功能更新：增加高倍屏下，绘制会模糊的适配方案，可以通过options.isDpr属性进行开启或者关闭，感谢网友“Wong-Harry”的建议与反馈。
 
 > v1.1.2 优化部分逻辑代码.
 
