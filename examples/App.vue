@@ -99,6 +99,8 @@ export default {
         return {
             value: null,
             options:{
+                isFullScreen: false,   ////是否全屏手写 [Boolean] 可选
+                isFullCover: false, //是否全屏模式下覆盖所有的元素 [Boolean]   可选
                 isDpr: false,       //是否使用dpr兼容高分屏 [Boolean] 可选
                 lastWriteSpeed: 1,  //书写速度 [Number] 可选
                 lastWriteWidth: 2,  //下笔的宽度 [Number] 可选

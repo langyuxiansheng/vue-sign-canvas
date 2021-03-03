@@ -41,6 +41,8 @@ export default {
             context:null,   //canvas 画布对象
             dpr: 1,
             config: {
+                isFullScreen: false, //是否全屏手写 [Boolean] 可选
+                isFullCover: false, //是否全屏模式下覆盖所有的元素 [Boolean] 可选
                 isDpr: false,       //是否使用dpr兼容高分屏 [Boolean] 可选
                 lastWriteSpeed: 1,  //书写速度 [Number] 可选
                 lastWriteWidth: 2,  //下笔的宽度 [Number] 可选
@@ -58,11 +60,19 @@ export default {
                 writeColor: '#101010', // 轨迹颜色  [String] 可选
                 isSign: false, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
                 imgType:'png'   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
-            }
+            },
+            resizeTimer: null
         };
     },
     mounted () {
         this.init();
+        //监听窗口变化
+        window.addEventListener('resize',  ()=> {
+            if (this.resizeTimer) clearTimeout(this.resizeTimer);
+            this.resizeTimer = setTimeout(()=>{
+                this.init()
+            } , 100);
+        });
     },
 
     watch:{
@@ -86,6 +96,17 @@ export default {
             this.canvas = document.getElementById(this.domId);
             this.context = this.canvas.getContext("2d");
             this.canvas.style.background = this.config.bgColor;
+            if (this.config.isFullScreen) {
+                this.config.canvasWidth = window.innerWidth || document.body.clientWidth;
+                this.config.canvasHeight = window.innerHeight || document.body.clientHeight;
+                if (this.config.isFullCover) {//开启全屏覆盖
+                    this.canvas.style.position = 'fixed';
+                    this.canvas.style.top = 0;
+                    this.canvas.style.left = 0;
+                    this.canvas.style.margin = 0;
+                    this.canvas.style.zIndex = 20001;
+                }
+            }
             this.canvas.height = this.config.canvasWidth;
             this.canvas.width = this.config.canvasHeight;
             this.canvasInit();
