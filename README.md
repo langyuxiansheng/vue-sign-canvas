@@ -353,7 +353,7 @@ npm run lint
 
 ## 更新日志
 
-> v1.1.5 功能更新：增加全屏手写方案，可以通过 options.isFullScreen,和 options.isFullCover 属性控制,全屏模式下 canvasWidth 和 canvasHeight 属性设置无效,感谢网友 AFelicity”的建议与反馈。
+> v1.1.4 功能更新：增加全屏手写方案，可以通过 options.isFullScreen,和 options.isFullCover 属性控制,全屏模式下 canvasWidth 和 canvasHeight 属性设置无效,感谢网友 AFelicity”的建议与反馈。
 
 > v1.1.3 功能更新：增加高倍屏下，绘制会模糊的适配方案，可以通过 options.isDpr 属性进行开启或者关闭，感谢网友“Wong-Harry”的建议与反馈。
 
@@ -386,3 +386,44 @@ npm run lint
 ### Customize configuration
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## 横屏全屏模式下签名要怎么显示?
+
+```html
+<div class="user-sign">
+    <template v-if="sign">
+        <img class="sign-image" :src="sign" alt="" srcset="" />
+    </template>
+</div>
+
+<script>
+    //局部注册
+    import SignCanvas from "sign-canvas";
+    import util from "@util";
+    import { saveSignature } from "@/http";
+    export default {
+        name: "UserSign",
+        components: { SignCanvas },
+        data() {
+            return {
+                sign: null,
+            };
+        },
+    };
+</script>
+<style lang="scss" scoped>
+    .user-sign {
+        background: #e7e7e7;
+        height: 9.375rem;
+        position: relative;
+
+        .sign-image {
+            margin: 0 auto;
+            z-index: 9;
+            height: 100%;
+            transform: rotate(-90deg) scale(1.5);
+            display: block;
+        }
+    }
+</style>
+```
