@@ -344,6 +344,41 @@ export default {
                 positionParent = positionParent.offsetParent;
             }
             return realNum;
+        },
+
+        /**
+         * 图片压缩
+         */
+        dealImage()  {
+            //压缩系数0-1之间
+            var quality = 0.6;
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var dealWidth = 300;    //目标尺寸
+            var dealHeight = 200;
+            canvas.width = dealWidth;
+            canvas.width = dealHeight;
+
+
+            // if (Math.max(imgWidth, imgHeight) > w) {
+            //     if (imgWidth > imgHeight) {
+            //         canvas.width = w
+            //         canvas.height = w * imgHeight / imgWidth
+            //     } else {
+            //         canvas.height = w
+            //         canvas.width = w * imgWidth / imgHeight
+            //     }
+            // } else {
+            //     canvas.width = imgWidth
+            //     canvas.height = imgHeight
+            //     quality = 0.6
+            // }
+            const c = document.getElementById(this.domId);
+            const dataURL = c.toDataURL('image/png');
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.drawImage(dataURL, 0, 0, canvas.width, canvas.height)
+            var ba = canvas.toDataURL('image/jpeg', quality) //压缩语句
+            console.log(ba);
         }
     }
 };

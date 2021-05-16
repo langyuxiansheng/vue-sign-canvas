@@ -88,6 +88,7 @@
             <span id="clear" @click="canvasClear()">清空</span>
             <span id="save" @click="saveAsImg()">保存</span>
             <span id="save" @click="downloadSignImg()">下载</span>
+            <span id="save" @click="dealImage()">压缩</span>
         </div>
     </div>
 </template>
@@ -143,6 +144,13 @@ export default {
          */
         downloadSignImg(){
             this.$refs.SignCanvas.downloadSignImg();
+        },
+
+        /**
+         * 下载dealImage图片
+         */
+        dealImage(){
+            this.$refs.SignCanvas.dealImage();
         },
 
     }
