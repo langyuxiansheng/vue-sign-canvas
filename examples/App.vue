@@ -147,10 +147,11 @@ export default {
         },
 
         /**
-         * 下载dealImage图片
+         * 获取压缩后的图片
          */
         dealImage(){
-            this.$refs.SignCanvas.dealImage();
+           const img = this.$refs.SignCanvas.dealImage(0.1);
+           console.log(`获取压缩后的图片:`,img);
         },
 
     }

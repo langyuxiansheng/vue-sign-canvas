@@ -216,16 +216,6 @@ export default {
         },
 
         /**
-         *  保存图片 格式base64
-         */
-        saveAsImg() {
-            const image = new Image();
-            image.src = this.canvas.toDataURL(`image/${this.config.imgType}`);
-            this.$emit('confirm',image.src);
-            return image.src;
-        },
-
-        /**
          * 初始化画板
          */
         canvasInit () {
@@ -301,6 +291,17 @@ export default {
 
         /* ==========================移动端兼容=End================================== */
 
+         /**
+         *  保存图片 格式base64
+         */
+        saveAsImg() {
+            const image = new Image();
+            image.src = this.canvas.toDataURL(`image/${this.config.imgType}`);
+            this.$emit('confirm',image.src);
+            console.log(image.src)
+            return image.src;
+        },
+
         /**
          * 下载二维码到本地
          */
@@ -348,37 +349,22 @@ export default {
 
         /**
          * 图片压缩
+         * @param qual 压缩比例 0-1直接
+         * @default 0.6
          */
-        dealImage()  {
+        dealImage(qual = 0.6)  {
+            let quality = qual < 0.1 || qual > 1 ? 0.6 : qual;
             //压缩系数0-1之间
-            var quality = 0.6;
-            var canvas = document.createElement('canvas');
-            var ctx = canvas.getContext('2d');
-            var dealWidth = 300;    //目标尺寸
-            var dealHeight = 200;
-            canvas.width = dealWidth;
-            canvas.width = dealHeight;
-
-
-            // if (Math.max(imgWidth, imgHeight) > w) {
-            //     if (imgWidth > imgHeight) {
-            //         canvas.width = w
-            //         canvas.height = w * imgHeight / imgWidth
-            //     } else {
-            //         canvas.height = w
-            //         canvas.width = w * imgWidth / imgHeight
-            //     }
-            // } else {
-            //     canvas.width = imgWidth
-            //     canvas.height = imgHeight
-            //     quality = 0.6
-            // }
-            const c = document.getElementById(this.domId);
-            const dataURL = c.toDataURL('image/png');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            //目标尺寸
+            canvas.height = Math.floor(this.config.canvasWidth * quality);
+            canvas.width = Math.floor(this.config.canvasHeight * quality);
+            const image = new Image();
+            image.src = this.canvas.toDataURL(`image/png`);
             ctx.clearRect(0, 0, canvas.width, canvas.height)
-            ctx.drawImage(dataURL, 0, 0, canvas.width, canvas.height)
-            var ba = canvas.toDataURL('image/jpeg', quality) //压缩语句
-            console.log(ba);
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height)
+            return canvas.toDataURL('image/png', quality) //压缩语句
         }
     }
 };
