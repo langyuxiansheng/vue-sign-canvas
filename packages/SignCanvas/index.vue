@@ -51,7 +51,7 @@ export default {
                 canvasWidth: 600, //canvas宽高 [Number] 可选
                 canvasHeight: 600,  //高度  [Number] 可选
                 isShowBorder: true, //是否显示边框 [可选]
-                bgColor: '#fcc', //背景色 [String] 可选 注:这背景色仅仅只是canvas背景,保存的图片仍然是透明的
+                bgColor: 'none', //背景色 [String] 可选 直接渲染到图片 [移除:这背景色仅仅只是canvas背景,保存的图片仍然是透明的]
                 borderWidth: 1, // 网格线宽度  [Number] 可选
                 borderColor: "#ff787f", //网格颜色  [String] 可选
                 writeWidth: 5, //基础轨迹宽度  [Number] 可选
@@ -59,9 +59,12 @@ export default {
                 minWriteWidth: 5, // 写字模式最小线宽  [Number] 可选
                 writeColor: '#101010', // 轨迹颜色  [String] 可选
                 isSign: false, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
-                imgType:'png'   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
+                imgType:'png',   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
+                quality: 1, // 压缩率  [Number] 可选范围[0-1]之间的小数,默认为1不压缩
             },
-            resizeTimer: null
+            resizeTimer: null,
+            canvasImage: null,   //canvas转换的图片
+            test: null
         };
     },
     mounted () {
@@ -95,7 +98,6 @@ export default {
             this.dpr = typeof window !== 'undefined' && this.config.isDpr ? window.devicePixelRatio || window.webkitDevicePixelRatio || window.mozDevicePixelRatio || 1 : 1;
             this.canvas = document.getElementById(this.domId);
             this.context = this.canvas.getContext("2d");
-            this.canvas.style.background = this.config.bgColor;
             if (this.config.isFullScreen) {
                 this.config.canvasWidth = window.innerWidth || document.body.clientWidth;
                 this.config.canvasHeight = window.innerHeight || document.body.clientHeight;
@@ -131,7 +133,7 @@ export default {
             if (this.config.isSign) {
                 this.context.lineWidth = this.config.writeWidth * this.dpr;
             } else {
-                const lineWidth = this.config.lastWriteWidth = this.config.lastWriteWidth / 4 * 3 + returnNum / 4
+                const lineWidth = this.config.lastWriteWidth = this.config.lastWriteWidth / 4 * 3 + returnNum / 4;
                 this.context.lineWidth = lineWidth * this.dpr;
             }
         },
@@ -186,6 +188,13 @@ export default {
             this.context.save();
             this.context.strokeStyle = this.config.writeColor;
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            //设置背景色
+            if(this.config.bgColor && this.config.bgColor !== 'none') {
+                this.context.fillStyle = this.config.bgColor;
+                this.context.fillRect(0,0,this.canvas.width,this.canvas.height);
+            }
+
+            //绘制线框
             this.context.beginPath();
             this.context.lineWidth = this.config.borderWidth * this.dpr;
             this.context.strokeStyle = this.config.borderColor;
@@ -211,8 +220,8 @@ export default {
                 this.context.lineTo(this.canvas.width / 2, this.canvas.height);
                 this.context.stroke();
             }
-            this.$emit('confirm', null);
             this.context.restore();
+            this.$emit('confirm', null);
         },
 
         /**
@@ -295,17 +304,23 @@ export default {
          *  保存图片 格式base64
          */
         saveAsImg() {
-            const image = new Image();
-            image.src = this.canvas.toDataURL(`image/${this.config.imgType}`);
-            this.$emit('confirm',image.src);
-            console.log(image.src)
-            return image.src;
+            this.canvasImage = new Image();
+            this.canvasImage.src = this.canvas.toDataURL(`image/${this.config.imgType}`);
+            let img = this.canvasImage.src;
+            this.$emit('confirm',img);
+            //压缩图片
+            if(this.config.quality !== 1) img = this.dealImage();
+            console.log('保存图片 格式base64:',img)
+            return img;
         },
 
         /**
          * 下载二维码到本地
+         * @param name 文件名
+         * @param isQual 是否下载压缩后的图片
          */
-        downloadSignImg(name) {
+        downloadSignImg(name, isQual) {
+            console.log(isQual);
             const c = document.getElementById(this.domId);
             const dataURL = c.toDataURL('image/png');
             this.saveFile(dataURL, name ? `${name}.${this.config.imgType}` : `${Date.parse(new Date())}.${this.config.imgType}`);
@@ -349,22 +364,19 @@ export default {
 
         /**
          * 图片压缩
-         * @param qual 压缩比例 0-1直接
-         * @default 0.6
          */
-        dealImage(qual = 0.6)  {
-            let quality = qual < 0.1 || qual > 1 ? 0.6 : qual;
+        dealImage()  {
+            let quality = this.config.quality < 0.1 || this.config.quality > 1 ? 0.6 : this.config.quality;
             //压缩系数0-1之间
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+            let canvas = document.createElement('canvas');
+            let ctx = canvas.getContext('2d');
             //目标尺寸
             canvas.height = Math.floor(this.config.canvasWidth * quality);
             canvas.width = Math.floor(this.config.canvasHeight * quality);
-            const image = new Image();
-            image.src = this.canvas.toDataURL(`image/png`);
-            ctx.clearRect(0, 0, canvas.width, canvas.height)
-            ctx.drawImage(image, 0, 0, canvas.width, canvas.height)
-            return canvas.toDataURL('image/png', quality) //压缩语句
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(this.canvasImage, 0, 0, canvas.width, canvas.height);
+            let drgImg = canvas.toDataURL('image/png', quality);
+            return drgImg;
         }
     }
 };

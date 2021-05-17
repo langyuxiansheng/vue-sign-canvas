@@ -110,15 +110,16 @@ export default {
                 canvasWidth: 350, //canvas宽高 [Number] 可选
                 canvasHeight: 370,  //高度  [Number] 可选
                 isShowBorder: true, //是否显示边框 [可选]
-                bgColor: '#fcc', //背景色 [String] 可选
+                // bgColor: 'rgba(251,247,241,.3)', //背景色 [String] 可选值 none 为none 的时候不显示背景 ['#fbf7f1']
                 borderWidth: 1, // 网格线宽度  [Number] 可选
                 borderColor: "#ff787f", //网格颜色  [String] 可选
                 writeWidth: 5, //基础轨迹宽度  [Number] 可选
                 maxWriteWidth: 30, // 写字模式最大线宽  [Number] 可选
                 minWriteWidth: 5, // 写字模式最小线宽  [Number] 可选
-                writeColor: '#101010', // 轨迹颜色  [String] 可选
+                writeColor: '#ff6409', // 轨迹颜色  [String] 可选
                 isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
-                imgType:'png'   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
+                imgType:'png',   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
+                quality: 0.4, // 压缩率  [Number] 可选范围[0-1]之间的小数,默认为1不压缩
             }
         }
     },
@@ -137,6 +138,7 @@ export default {
         saveAsImg(){
             const img = this.$refs.SignCanvas.saveAsImg();
             alert(`image 的base64：${img}`);
+            console.log(`保存图片:`,img);
         },
 
         /**
@@ -150,7 +152,7 @@ export default {
          * 获取压缩后的图片
          */
         dealImage(){
-           const img = this.$refs.SignCanvas.dealImage(0.1);
+           const img = this.$refs.SignCanvas.dealImage();
            console.log(`获取压缩后的图片:`,img);
         },
 
@@ -158,6 +160,9 @@ export default {
 }
 </script>
 <style lang="less">
+#app{
+    background: #E7EDEB;
+}
 * {
     margin: 0;
     padding: 0;
