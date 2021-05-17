@@ -306,12 +306,8 @@ export default {
         saveAsImg() {
             this.canvasImage = new Image();
             this.canvasImage.src = this.canvas.toDataURL(`image/${this.config.imgType}`);
-            let img = this.canvasImage.src;
-            this.$emit('confirm',img);
-            //压缩图片
-            if(this.config.quality !== 1) img = this.dealImage();
-            console.log('保存图片 格式base64:',img)
-            return img;
+            this.$emit('confirm',this.canvasImage.src);
+            return this.config.quality !== 1 ? this.dealImage() : this.canvasImage.src;
         },
 
         /**
@@ -319,10 +315,8 @@ export default {
          * @param name 文件名
          * @param isQual 是否下载压缩后的图片
          */
-        downloadSignImg(name, isQual) {
-            console.log(isQual);
-            const c = document.getElementById(this.domId);
-            const dataURL = c.toDataURL('image/png');
+        downloadSignImg(name) {
+            let dataURL = this.saveAsImg();
             this.saveFile(dataURL, name ? `${name}.${this.config.imgType}` : `${Date.parse(new Date())}.${this.config.imgType}`);
         },
 
