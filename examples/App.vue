@@ -1,7 +1,9 @@
 <template>
     <div id="app">
         <h2 class="title">Vue Sign Canvas 电子签名板</h2>
-        <sign-canvas class="sign-canvas" ref="SignCanvas" :options="options" v-model="value"/>
+        <template v-if="show">
+            <sign-canvas class="sign-canvas" ref="SignCanvas" :options="options" v-model="value"/>
+        </template>
         <img v-if="value" class="view-image" :src="value" width="150" height="150">
         <div class="config">
             <ul class="ul-config">
@@ -87,6 +89,7 @@
         <div class="sign-btns">
             <span id="clear" @click="canvasClear()">清空</span>
             <span id="save" @click="saveAsImg()">保存</span>
+            <span id="save" @click="onShowCanvas()">{{ show ? '销毁' : '创建' }}</span>
             <span id="save" @click="downloadSignImg()">下载</span>
             <span id="save" @click="dealImage()">压缩</span>
         </div>
@@ -99,6 +102,7 @@ export default {
     data(){
         return {
             value: null,
+            show: true,
             options:{
                 isFullScreen: false,   ////是否全屏手写 [Boolean] 可选
                 isFullCover: false, //是否全屏模式下覆盖所有的元素 [Boolean]   可选
@@ -155,6 +159,13 @@ export default {
            const img = this.$refs.SignCanvas.dealImage();
            console.log(`获取压缩后的图片:`,img);
         },
+
+        /**
+         * 是否显示画板
+         */
+        onShowCanvas(){
+           this.show = !this.show;
+        }
 
     }
 }

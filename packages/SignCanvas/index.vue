@@ -60,7 +60,6 @@ export default {
                 writeColor: '#101010', // 轨迹颜色  [String] 可选
                 isSign: false, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
                 imgType:'png',   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
-                quality: 1, // 压缩率  [Number] 可选范围[0-1]之间的小数,默认为1不压缩
             },
             resizeTimer: null,
             canvasImage: null,   //canvas转换的图片
@@ -70,12 +69,19 @@ export default {
     mounted () {
         this.init();
         //监听窗口变化
-        window.addEventListener('resize',  ()=> {
+        window.onresize = ()=> {
+            console.log("resize object");
             if (this.resizeTimer) clearTimeout(this.resizeTimer);
             this.resizeTimer = setTimeout(()=>{
                 this.init()
             } , 100);
-        });
+        }
+    },
+
+    beforeDestroy () {
+        console.log("beforeDestroy");
+        window.onresize = null;
+        clearTimeout(this.resizeTimer);
     },
 
     watch:{
@@ -358,18 +364,21 @@ export default {
 
         /**
          * 图片压缩
+         * @param quality 压缩系数
+         * @returns
+         * 说明: 此方法返回压缩后的base64,系数[0.1-1]之间
          */
-        dealImage()  {
-            let quality = this.config.quality < 0.1 || this.config.quality > 1 ? 0.6 : this.config.quality;
+        dealImage(quality = 1)  {
+            let curQuality = quality < 0.1 || quality > 1 ? 0.6 : quality;
             //压缩系数0-1之间
             let canvas = document.createElement('canvas');
             let ctx = canvas.getContext('2d');
             //目标尺寸
-            canvas.height = Math.floor(this.config.canvasWidth * quality);
-            canvas.width = Math.floor(this.config.canvasHeight * quality);
+            canvas.height = Math.floor(this.config.canvasWidth * curQuality);
+            canvas.width = Math.floor(this.config.canvasHeight * curQuality);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(this.canvasImage, 0, 0, canvas.width, canvas.height);
-            let drgImg = canvas.toDataURL('image/png', quality);
+            let drgImg = canvas.toDataURL('image/png', curQuality);
             return drgImg;
         }
     }
