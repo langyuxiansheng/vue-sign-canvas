@@ -70,7 +70,6 @@ export default {
         this.init();
         //监听窗口变化
         window.onresize = ()=> {
-            console.log("resize object");
             if (this.resizeTimer) clearTimeout(this.resizeTimer);
             this.resizeTimer = setTimeout(()=>{
                 this.init()
@@ -79,7 +78,6 @@ export default {
     },
 
     beforeDestroy () {
-        console.log("beforeDestroy");
         window.onresize = null;
         clearTimeout(this.resizeTimer);
     },
