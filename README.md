@@ -1,8 +1,10 @@
-# sign-canvas 一个基于 canvas 开发,封装于 Vue 组件的通用手写签名板(电子签名板),支持 pc 端和移动端;
+# sign-canvas 一个基于 canvas 开发,封装于 Vue 组件的通用手写签名板(电子签名板),支持 pc 端和移动端
 
 #### ┭┮﹏┭┮ 因为 vue-sign-canvas 的包名被占用了,只好去掉一个前缀了.... 假如此轮子对你有帮助,请顺手 star 一下吧.o(_￣︶￣_)o
 
-#### 更多文章和技术推文，请关注微信公众号"笔优站长",有问题也可以及时反馈哦！
+### vue3 版本的请移步至  <https://github.com/langyuxiansheng/sign-canvas-plus>
+
+#### 更多文章和技术推文，请关注微信公众号"笔优站长",有问题也可以及时反馈哦
 
 ## 开始使用! 下载安装 npm 包
 
@@ -133,7 +135,7 @@ components: {
                     isDpr: false, //是否使用dpr兼容高倍屏 [Boolean] 可选
                     lastWriteSpeed: 1, //书写速度 [Number] 可选
                     lastWriteWidth: 2, //下笔的宽度 [Number] 可选
-                    lineCap: "round", //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square]	正方形线帽
+                    lineCap: "round", //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square] 正方形线帽
                     lineJoin: "bevel", //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
                     canvasWidth: 350, //canvas宽高 [Number] 可选
                     canvasHeight: 370, //高度  [Number] 可选
@@ -257,7 +259,7 @@ props:{
     isDpr: false,       //是否使用dpr兼容高倍屏 [Boolean] 可选
     lastWriteSpeed: 1,  //书写速度 [Number] 可选
     lastWriteWidth: 2,  //下笔的宽度 [Number] 可选
-    lineCap: 'round',   //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square]	正方形线帽
+    lineCap: 'round',   //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square] 正方形线帽
     lineJoin: 'bevel',  //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
     canvasWidth: 350, //canvas宽高 [Number] 可选
     canvasHeight: 370,  //高度  [Number] 可选
@@ -310,7 +312,7 @@ this.$refs.SignCanvas.downloadSignImg();
 
 ---
 
-## 更多功能正在完善中......
+## 更多功能正在完善中
 
 ## 如果您有什么好的建议请留言
 
@@ -363,9 +365,9 @@ npm run lint
 
 > v1.1.0 本次更新调整较大,内容如下:
 
--   调整局部组件注册的逻辑,全局使用的不收影响,如果有局部注册的朋友请调整一下.
--   调整 demo 样式,增加动态配置项,属性支持动态响应了;
--   修复滚动距离导致画点偏移的 bug,优化核心代码,感谢网友“Jayj1997”的建议和反馈。
+- 调整局部组件注册的逻辑,全局使用的不收影响,如果有局部注册的朋友请调整一下.
+- 调整 demo 样式,增加动态配置项,属性支持动态响应了;
+- 修复滚动距离导致画点偏移的 bug,优化核心代码,感谢网友“Jayj1997”的建议和反馈。
 
 > v1.0.7 修复定位下的轨迹偏移,受 position 属性的影响的 bug。感谢网友“gexiaoyun” 和 “xingguyue”的反馈。
 
