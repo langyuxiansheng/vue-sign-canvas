@@ -372,8 +372,8 @@ export default {
             let canvas = document.createElement('canvas');
             let ctx = canvas.getContext('2d');
             //目标尺寸
-            canvas.height = Math.floor(this.config.canvasWidth * curQuality);
-            canvas.width = Math.floor(this.config.canvasHeight * curQuality);
+            canvas.width = Math.floor(this.config.canvasWidth * curQuality);
+            canvas.height = Math.floor(this.config.canvasHeight * curQuality);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(this.canvasImage, 0, 0, canvas.width, canvas.height);
             let drgImg = canvas.toDataURL('image/png', curQuality);
