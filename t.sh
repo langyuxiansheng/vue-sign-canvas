@@ -1,6 +1,6 @@
-echo "设置 npm config set registry http://registry.npmjs.org"
+echo "设置 npm config set registry https://registry.npmjs.org"
 
-npm config set registry http://registry.npmjs.org
+npm config set registry https://registry.npmjs.org
 
 echo "打包 => dist";
 
