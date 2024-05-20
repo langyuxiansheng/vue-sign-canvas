@@ -36,7 +36,7 @@ export default {
     data () {
         return {
             value: null, //base64
-            domId: `sign-canvas-${Math.random().toString(36).substr(2)}`,  //生成唯一dom标识
+            domId: `sign-canvas-${Math.random().toString(36).substring(2)}`,  //生成唯一dom标识
             canvas:null,    //canvas dom对象
             context:null,   //canvas 画布对象
             dpr: 1,
@@ -60,6 +60,7 @@ export default {
                 writeColor: '#101010', // 轨迹颜色  [String] 可选
                 isSign: false, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
                 imgType:'png',   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
+                enableResize: true, //是否启用窗口变化监听 [Boolean] 可选, 此操作在pc端用于监听窗口变化,动态调整画板大小
             },
             resizeTimer: null,
             canvasImage: null,   //canvas转换的图片
@@ -68,18 +69,23 @@ export default {
     },
     mounted () {
         this.init();
-        //监听窗口变化
-        window.onresize = ()=> {
-            if (this.resizeTimer) clearTimeout(this.resizeTimer);
-            this.resizeTimer = setTimeout(()=>{
-                this.init()
-            } , 100);
+        alert(this.config.enableResize);
+        if(this.config.enableResize){
+            //监听窗口变化
+            window.onresize = ()=> {
+                if (this.resizeTimer) clearTimeout(this.resizeTimer);
+                this.resizeTimer = setTimeout(()=>{
+                    this.init()
+                } , 100);
+            }
         }
     },
 
     beforeDestroy () {
-        window.onresize = null;
-        clearTimeout(this.resizeTimer);
+        if(this.config.enableResize){
+            window.onresize = null;
+            clearTimeout(this.resizeTimer);
+        }
     },
 
     watch:{
