@@ -149,6 +149,7 @@ components: {
                     writeColor: "#101010", // 轨迹颜色  [String] 可选
                     isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
                     imgType: "png", //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
+                    enableResize: true, //是否启用窗口变化监听 [Boolean] 可选, 此操作在pc端用于监听窗口变化,动态调整画板大小 调整大小的时候会清空画板内容, 移动端使用的时候建议设置为false,感
                 },
             };
         },
@@ -272,7 +273,8 @@ props:{
     minWriteWidth: 5, // 写字模式最小线宽  [Number] 可选
     writeColor: '#101010', // 轨迹颜色  [String] 可选
     isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
-    imgType:'png'   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
+    imgType:'png',   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
+    enableResize: true, //是否启用窗口变化监听 [Boolean] 可选, 此操作在pc端用于监听窗口变化,动态调整画板大小 调整大小的时候会清空画板内容, 移动端使用的时候建议设置为false,感
 }
 ```
 
@@ -355,6 +357,10 @@ npm run lint
 
 ## 更新日志
 
+> v1.1.7 bug修复及功能更新：增加enableResize 属性，可以通过 options.enableResize 来控制窗口变化的时候,是否自动调整画板大小,自动调整大小的时候会清空画板内容, 移动端使用的时候建议设置为false,感谢网友 “ruolunhui”，“turboceo”的建议与反馈。
+
+> v1.1.6 bug修复：
+> v1.1.5 bug修复：
 > v1.1.4 功能更新：增加全屏手写方案，可以通过 options.isFullScreen,和 options.isFullCover 属性控制,全屏模式下 canvasWidth 和 canvasHeight 属性设置无效,感谢网友 AFelicity”的建议与反馈。
 
 > v1.1.3 功能更新：增加高倍屏下，绘制会模糊的适配方案，可以通过 options.isDpr 属性进行开启或者关闭，感谢网友“Wong-Harry”的建议与反馈。

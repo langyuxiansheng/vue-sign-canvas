@@ -124,6 +124,7 @@ export default {
                 isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
                 imgType:'png',   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
                 quality: 0.4, // 压缩率  [Number] 可选范围[0-1]之间的小数,默认为1不压缩
+                enableResize: false, //是否启用窗口变化监听 [Boolean] 可选, 此操作在pc端用于监听窗口变化,动态调整画板大小
             }
         }
     },
