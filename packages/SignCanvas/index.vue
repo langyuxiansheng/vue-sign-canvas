@@ -69,7 +69,6 @@ export default {
     },
     mounted () {
         this.init();
-        alert(this.config.enableResize);
         if(this.config.enableResize){
             //监听窗口变化
             window.onresize = ()=> {
