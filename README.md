@@ -1,438 +1,262 @@
-# sign-canvas 一个基于 canvas 开发,封装于 Vue 组件的通用手写签名板(电子签名板),支持 pc 端和移动端
+# sign-canvas
 
-#### ┭┮﹏┭┮ 因为 vue-sign-canvas 的包名被占用了,只好去掉一个前缀了.... 假如此轮子对你有帮助,请顺手 star 一下吧.o(_￣︶￣_)o
+基于 Vue 3 + TypeScript 的手写签名板组件，支持 PC / 移动端指针输入、高清绘制、空签名判断、图片回显、只读模式、撤销重做、描写临摹、自定义背景图合成、导出旋转、JPEG 白底导出和类型提示。
 
-### vue3 版本的请移步至  <https://github.com/langyuxiansheng/sign-canvas-plus>
+## 版本说明
 
-#### 更多文章和技术推文，请关注微信公众号"笔优站长",有问题也可以及时反馈哦
+`2.0.0` 是一次完整重构升级，不再兼容 `1.x` 的 Vue 2 项目和旧构建体系。
 
-## 开始使用! 下载安装 npm 包
+- 新版本：Vue 3 + TypeScript + Vite。
+- 旧版本：Vue 2 + Vue CLI，继续使用 `1.x`。
+- 如果你的项目仍是 Vue 2，请安装旧版本：
 
 ```bash
-npm i sign-canvas --save
+npm i sign-canvas@1
 ```
 
-```javascript
-//全局注册 main.js
-import SignCanvas from "sign-canvas";
+也可以切换到仓库的 `1.x` 分支查看旧版源码和文档。
 
-Vue.use(SignCanvas);
+## 兼容范围
 
-//局部注册
-import SignCanvas from "sign-canvas";
+`sign-canvas@2` 面向 Vue 3 Web/H5 场景，依赖浏览器 DOM Canvas 和 Pointer Events。当前主包不承诺兼容 uni-app 小程序端、App 端或其他非标准 DOM 运行时。
 
-components: {
-    SignCanvas;
-}
+如果你的 uni-app 项目只运行 H5 端，可以自行验证使用；如果目标包含小程序或 App，建议单独封装适配层，或后续新建独立的 uni-app 专用包，而不是在当前 Web 主包里混入平台分支。
+
+## 安装
+
+```bash
+npm i sign-canvas
 ```
 
-你可以这样使用:
+## 使用
 
-### 组件模板使用
-
-```html
+```vue
 <template>
-    <div id="app">
-        <h2 class="title">Vue Sign Canvas 电子签名板</h2>
-        <sign-canvas class="sign-canvas" ref="SignCanvas" :options="options" v-model="value" />
-        <img v-if="value" class="view-image" :src="value" width="150" height="150" />
-        <div class="config">
-            <ul class="ul-config">
-                <li class="li-c">
-                    <span class="item-label">书写速度:</span>
-                    <span class="item-content">
-                        <select name="isSign" v-model="options.isSign">
-                            <option :value="true">签名</option>
-                            <option :value="false">写字</option>
-                        </select>
-                    </span>
-                </li>
-                <li class="li-c">
-                    <span class="item-label">显示边框/网格:</span>
-                    <span class="item-content">
-                        <select name="isSign" v-model="options.isShowBorder">
-                            <option :value="true">显示</option>
-                            <option :value="false">不显示</option>
-                        </select>
-                    </span>
-                </li>
-                <li class="li-c">
-                    <span class="item-label">兼容高倍屏高清绘制:</span>
-                    <span class="item-content">
-                        <select name="isSign" v-model="options.isDpr">
-                            <option :value="true">启用</option>
-                            <option :value="false">关闭</option>
-                        </select>
-                    </span>
-                </li>
-                <li class="li-c">
-                    <span class="item-label">边框宽度:</span>
-                    <span class="item-content">
-                        <input v-model="options.borderWidth" type="number" />
-                    </span>
-                </li>
-                <li class="li-c">
-                    <span class="item-label">下笔宽度:</span>
-                    <span class="item-content">
-                        <input v-model="options.writeWidth" type="number" />
-                    </span>
-                </li>
-                <li class="li-c">
-                    <span class="item-label">图片类型:</span>
-                    <span class="item-content">
-                        <input v-model="options.imgType" type="text" />
-                    </span>
-                </li>
-                <li class="li-c">
-                    <span class="item-label">线条的边缘类型:</span>
-                    <span class="item-content">
-                        <select name="lineCap" v-model="options.lineCap">
-                            <option value="butt">平直的边缘</option>
-                            <option value="round">圆形线帽</option>
-                            <option value="square">正方形线帽</option>
-                        </select>
-                    </span>
-                </li>
-                <li class="li-c">
-                    <span class="item-label">线条交汇时边角的类型:</span>
-                    <span class="item-content">
-                        <select name="lineCap" v-model="options.lineJoin">
-                            <option value="bevel">创建斜角</option>
-                            <option value="round">创建圆角</option>
-                            <option value="miter">创建尖角</option>
-                        </select>
-                    </span>
-                </li>
-                <li class="li-c">
-                    <span class="item-label">画笔颜色:</span>
-                    <span class="item-content">
-                        <input type="color" v-model="options.writeColor" />
-                    </span>
-                </li>
-                <li class="li-c">
-                    <span class="item-label">背景色:</span>
-                    <span class="item-content">
-                        <input type="color" v-model="options.bgColor" />
-                    </span>
-                </li>
-            </ul>
-        </div>
-        <div class="sign-btns">
-            <span id="clear" @click="canvasClear()">清空</span>
-            <span id="save" @click="saveAsImg()">保存</span>
-            <span id="save" @click="downloadSignImg()">下载</span>
-        </div>
-    </div>
+  <SignCanvas
+    ref="signCanvasRef"
+    v-model="signature"
+    :options="options"
+    @change="status = $event"
+  />
 </template>
-<script>
-    import SignCanvas from "../packages";
-    export default {
-        components: { SignCanvas },
-        data() {
-            return {
-                value: null,
-                options: {
-                    isDpr: false, //是否使用dpr兼容高倍屏 [Boolean] 可选
-                    lastWriteSpeed: 1, //书写速度 [Number] 可选
-                    lastWriteWidth: 2, //下笔的宽度 [Number] 可选
-                    lineCap: "round", //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square] 正方形线帽
-                    lineJoin: "bevel", //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
-                    canvasWidth: 350, //canvas宽高 [Number] 可选
-                    canvasHeight: 370, //高度  [Number] 可选
-                    isShowBorder: true, //是否显示边框 [可选]
-                    bgColor: "#fcc", //背景色 [String] 可选
-                    borderWidth: 1, // 网格线宽度  [Number] 可选
-                    borderColor: "#ff787f", //网格颜色  [String] 可选
-                    writeWidth: 5, //基础轨迹宽度  [Number] 可选
-                    maxWriteWidth: 30, // 写字模式最大线宽  [Number] 可选
-                    minWriteWidth: 5, // 写字模式最小线宽  [Number] 可选
-                    writeColor: "#101010", // 轨迹颜色  [String] 可选
-                    isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
-                    imgType: "png", //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
-                    enableResize: true, //是否启用窗口变化监听 [Boolean] 可选, 此操作在pc端用于监听窗口变化,动态调整画板大小 调整大小的时候会清空画板内容, 移动端使用的时候建议设置为false,感
-                },
-            };
-        },
-        methods: {
-            /**
-             * 清除画板
-             */
-            canvasClear() {
-                this.$refs.SignCanvas.canvasClear();
-            },
 
-            /**
-             * 保存图片
-             */
-            saveAsImg() {
-                const img = this.$refs.SignCanvas.saveAsImg();
-                alert(`image 的base64：${img}`);
-            },
+<script setup lang="ts">
+import { ref } from 'vue';
+import SignCanvas, {
+  type SignCanvasExpose,
+  type SignCanvasOptions,
+  type SignatureStatus
+} from 'sign-canvas';
 
-            /**
-             * 下载图片
-             */
-            downloadSignImg() {
-                this.$refs.SignCanvas.downloadSignImg();
-            },
-        },
-    };
+const signature = ref<string | null>(null);
+const signCanvasRef = ref<SignCanvasExpose | null>(null);
+const status = ref<SignatureStatus>({
+  empty: true,
+  strokes: 0,
+  hasImage: false,
+  canUndo: false,
+  canRedo: false,
+  history: 0,
+  redo: 0
+});
+
+const options: SignCanvasOptions = {
+  canvasWidth: 600,
+  canvasHeight: 360,
+  isDpr: true,
+  isSign: true,
+  writeColor: '#101010',
+  bgColor: '#fff',
+  imgType: 'png'
+};
+
+function submit() {
+  if (signCanvasRef.value?.isEmpty()) {
+    return;
+  }
+  const image = signCanvasRef.value?.toDataURL();
+}
 </script>
-<style lang="less">
-    * {
-        margin: 0;
-        padding: 0;
-    }
-    .title {
-        padding: 20px;
-        text-align: center;
-    }
-    .sign-canvas {
-        display: block;
-        margin: 20px auto;
-    }
-    .view-image {
-        display: block;
-        margin: 20px auto;
-    }
-    .config {
-        width: 350px;
-        margin: 20px auto;
-        .ul-config {
-            .li-c {
-                display: flex;
-                align-items: center;
-                padding: 4px 10px;
-                .item-label {
-                    font-size: 14px;
-                }
-                .item-content {
-                    margin-left: 10px;
-                }
-            }
-        }
-    }
-    .sign-btns {
-        display: flex;
-        justify-content: space-between;
-        #clear,
-        #clear1,
-        #save {
-            display: inline-block;
-            padding: 5px 10px;
-            width: 76px;
-            height: 40px;
-            line-height: 40px;
-            border: 1px solid #eee;
-            background: #e1e1e1;
-            border-radius: 10px;
-            text-align: center;
-            margin: 20px auto;
-            cursor: pointer;
-        }
-    }
-</style>
 ```
 
-### 功能与配置
+## 全局注册
 
-```javascript
-props:{
-    options: {  //配置项
-        required: false,
-        type: [Object],
-        default: () => null
-    }
-}
+```ts
+import { createApp } from 'vue';
+import SignCanvas from 'sign-canvas';
+import App from './App.vue';
 
-// 1. options [Object] 可选,非必传
-
-// 2. v-model [String] 可选,非必传
-
+createApp(App).use(SignCanvas).mount('#app');
 ```
 
-1. 配置项 options 属性
+## Options
 
-```javascript
-{
-    isFullScreen: false, //是否全屏手写 [Boolean] 可选
-    isFullCover: false, //是否全屏模式下覆盖所有的元素 [Boolean] 可选
-    isDpr: false,       //是否使用dpr兼容高倍屏 [Boolean] 可选
-    lastWriteSpeed: 1,  //书写速度 [Number] 可选
-    lastWriteWidth: 2,  //下笔的宽度 [Number] 可选
-    lineCap: 'round',   //线条的边缘类型 [butt]平直的边缘 [round]圆形线帽 [square] 正方形线帽
-    lineJoin: 'bevel',  //线条交汇时边角的类型  [bevel]创建斜角 [round]创建圆角 [miter]创建尖角。
-    canvasWidth: 350, //canvas宽高 [Number] 可选
-    canvasHeight: 370,  //高度  [Number] 可选
-    isShowBorder: true, //是否显示边框 [可选]
-    bgColor: '#fcc', //背景色 [String] 可选
-    borderWidth: 1, // 网格线宽度  [Number] 可选
-    borderColor: "#ff787f", //网格颜色  [String] 可选
-    writeWidth: 5, //基础轨迹宽度  [Number] 可选
-    maxWriteWidth: 30, // 写字模式最大线宽  [Number] 可选
-    minWriteWidth: 5, // 写字模式最小线宽  [Number] 可选
-    writeColor: '#101010', // 轨迹颜色  [String] 可选
-    isSign: true, //签名模式 [Boolean] 默认为非签名模式,有线框, 当设置为true的时候没有任何线框
-    imgType:'png',   //下载的图片格式  [String] 可选为 jpeg  canvas本是透明背景的
-    enableResize: true, //是否启用窗口变化监听 [Boolean] 可选, 此操作在pc端用于监听窗口变化,动态调整画板大小 调整大小的时候会清空画板内容, 移动端使用的时候建议设置为false,感
-}
+| 参数 | 类型 | 默认值 | 说明 |
+|---|---|---:|---|
+| `canvasWidth` | `number` | `600` | 非全屏模式下的 CSS 宽度 |
+| `canvasHeight` | `number` | `600` | 非全屏模式下的 CSS 高度 |
+| `isFullScreen` | `boolean` | `false` | 使用浏览器视口尺寸 |
+| `isFullCover` | `boolean` | `false` | 全屏时 fixed 覆盖页面 |
+| `isDpr` | `boolean` | `false` | 按设备像素比绘制，改善高清屏模糊 |
+| `isSign` | `boolean` | `false` | 签名模式使用固定线宽；关闭后使用动态线宽 |
+| `isShowBorder` | `boolean` | `true` | 绘制外框和辅助线 |
+| `bgColor` | `string` | `none` | 导出图片背景色，`none` 表示透明 |
+| `backgroundImage` | `string` | `''` | 自定义背景图地址，支持 base64、本地地址和允许 CORS 的远程图片 |
+| `backgroundImageFit` | `contain \| cover \| stretch \| center` | `cover` | 背景图适配方式 |
+| `backgroundImageOpacity` | `number` | `1` | 背景图透明度，范围 `0 - 1` |
+| `borderWidth` | `number` | `1` | 边框和辅助线宽度 |
+| `borderColor` | `string` | `#ff787f` | 边框和辅助线颜色 |
+| `writeWidth` | `number` | `5` | 签名模式画笔宽度 |
+| `maxWriteWidth` | `number` | `30` | 写字模式最大线宽 |
+| `minWriteWidth` | `number` | `5` | 写字模式最小线宽 |
+| `writeColor` | `string` | `#101010` | 画笔颜色 |
+| `lineCap` | `CanvasLineCap` | `round` | 线帽 |
+| `lineJoin` | `CanvasLineJoin` | `round` | 连接样式 |
+| `imgType` | `png \| jpeg \| jpg \| webp` | `png` | 导出图片类型 |
+| `quality` | `number` | `1` | 导出质量和缩放比例，范围 `0.1 - 1` |
+| `jpegBgColor` | `string` | `#fff` | JPEG 透明区域底色，避免黑底 |
+| `exportRotate` | `0 \| 90 \| 180 \| 270` | `0` | 导出图片旋转角度 |
+| `enableResize` | `boolean` | `true` | 窗口变化时自动重绘 |
+| `disabled` | `boolean` | `false` | 禁用绘制 |
+| `readonly` | `boolean` | `false` | 只读展示 |
+| `allowEmpty` | `boolean` | `false` | 是否允许空画布导出 base64 |
+| `enableHistory` | `boolean` | `true` | 是否记录笔迹历史，用于撤销和重做 |
+| `enableShortcuts` | `boolean` | `true` | 是否启用 `Ctrl+Z` / `Ctrl+Y` / `Ctrl+Shift+Z` |
+| `maxHistory` | `number` | `100` | 最多保留多少次下笔历史 |
+| `guideEnabled` | `boolean` | `false` | 是否开启描写/临摹引导层 |
+| `guideText` | `string` | `''` | 临摹文字 |
+| `guideFont` | `string` | `700 96px serif` | 临摹文字字体，使用 Canvas font 语法 |
+| `guideTextColor` | `string` | `#101010` | 临摹文字颜色 |
+| `guideTextOpacity` | `number` | `0.16` | 临摹文字透明度，范围 `0 - 1` |
+| `guideImage` | `string` | `''` | 临摹图片地址；配置后优先于 `guideText` |
+| `guideImageFit` | `contain \| cover \| stretch \| center` | `contain` | 临摹图片适配方式 |
+| `guideImageOpacity` | `number` | `0.24` | 临摹图片透明度，范围 `0 - 1` |
+
+## 图层和临摹
+
+`backgroundImage` 和 `guideEnabled` 都属于辅助图层：它们会显示在画布里，也会合成进导出的图片，但不会计入 `isEmpty()`、撤销历史或 `strokes` 数量。也就是说，用户还没有真正下笔时，带背景图或临摹字的画布仍然会被判断为空签名。
+
+```ts
+const options: SignCanvasOptions = {
+  canvasWidth: 720,
+  canvasHeight: 360,
+  bgColor: '#fff',
+  backgroundImage: contractImageBase64,
+  backgroundImageFit: 'cover',
+  guideEnabled: true,
+  guideText: '张三',
+  guideFont: '700 96px serif',
+  guideTextColor: '#101010',
+  guideTextOpacity: 0.16
+};
 ```
 
-2. 内置方法
+如果需要用图片作为临摹稿，配置 `guideImage` 即可。`guideImage` 的优先级高于 `guideText`。
 
-```javascript
-//清除画布 无返回值 [Void]
-this.$refs.SignCanvas.canvasClear();
-
-//获取base图片 返回图片的base64编码 [String]
-this.$refs.SignCanvas.saveAsImg();
-
-//下载图片到本地, 调用内置的下载图片方法,默认将图片保存为png格式(经测试在部分微信内置浏览器中无效)
-this.$refs.SignCanvas.downloadSignImg();
+```ts
+const options: SignCanvasOptions = {
+  guideEnabled: true,
+  guideImage: '/trace-template.png',
+  guideImageFit: 'contain',
+  guideImageOpacity: 0.22
+};
 ```
 
-## [在线演示](https://langyuxiansheng.github.io/vue-sign-canvas/)
+## 导出旋转
 
-### 图片展示
+`exportRotate` 只影响 `toDataURL()`、`saveAsImg()`、`downloadSignImg()` 和自动 `v-model` 输出的图片方向，不改变页面上正在绘制的画布方向。
 
----
+```ts
+const options: SignCanvasOptions = {
+  imgType: 'jpeg',
+  jpegBgColor: '#fff',
+  exportRotate: 90
+};
+```
 
-初始化展示
-![初始化展示](https://github.com/langyuxiansheng/vue-sign-canvas/blob/master/images/s1.png)
+## 实例方法
 
-非签名模式书写展示
-![非签名模式书写展示](https://github.com/langyuxiansheng/vue-sign-canvas/blob/master/images/s2.png)
+通过组件 `ref` 调用：
 
-保存展示
-![保存展示](https://github.com/langyuxiansheng/vue-sign-canvas/blob/master/images/s3.png)
+```ts
+signCanvasRef.value?.clear();
+signCanvasRef.value?.toDataURL();
+signCanvasRef.value?.fromDataURL(base64);
+signCanvasRef.value?.undo();
+signCanvasRef.value?.redo();
+```
 
-下载的图片展示
-![下载的图片展示](https://github.com/langyuxiansheng/vue-sign-canvas/blob/master/images/s4.png)
+| 方法 | 返回值 | 说明 |
+|---|---|---|
+| `clear(payload?)` | `void` | 清空画布 |
+| `canvasClear(payload?)` | `void` | 旧版方法名，等同于 `clear` |
+| `toDataURL(payload?)` | `string \| null` | 导出图片；空画布默认返回 `null` |
+| `saveAsImg(payload?)` | `string \| null` | 旧版方法名，等同于 `toDataURL` |
+| `downloadSignImg(name?)` | `string \| null` | 下载当前签名图 |
+| `dealImage(quality?)` | `string \| null` | 按质量导出压缩图 |
+| `fromDataURL(dataURL, payload?)` | `Promise<string \| null>` | 回显已有签名，之后可继续绘制 |
+| `undo()` | `boolean` | 撤销最近一次下笔 |
+| `redo()` | `boolean` | 重做最近一次撤销 |
+| `canUndo()` | `boolean` | 是否可以撤销 |
+| `canRedo()` | `boolean` | 是否可以重做 |
+| `getStrokes()` | `SignStroke[]` | 获取当前笔迹快照 |
+| `isEmpty()` | `boolean` | 判断是否没有真实签名内容 |
+| `getSignatureStatus()` | `SignatureStatus` | 返回 `{ empty, strokes, hasImage, canUndo, canRedo, history, redo }` |
+| `redraw()` | `void` | 手动重绘 |
+| `initCanvas()` | `void` | 手动重新初始化尺寸 |
 
-签名模式的图片展示
-![签名模式的图片展示](https://github.com/langyuxiansheng/vue-sign-canvas/blob/master/images/s5.png)
+## 撤销和重做
 
----
+组件会按“每次下笔”记录历史，而不是按每个线段记录历史。因此用户一次连续书写会作为一个整体被撤销。
 
-## 更多功能正在完善中
+- `Ctrl+Z` / `Command+Z`：撤销
+- `Ctrl+Y` / `Command+Y`：重做
+- `Ctrl+Shift+Z` / `Command+Shift+Z`：重做
 
-## 如果您有什么好的建议请留言
+输入框、文本域、下拉框和富文本区域内不会触发签名板快捷键，避免抢占表单自身的撤销行为。
+页面存在多个签名板时，快捷键只作用于当前获得焦点的画布；用户下笔时组件会自动聚焦当前画布。
 
-## 二次开发 下载项目
+## 事件
+
+| 事件 | 参数 | 说明 |
+|---|---|---|
+| `update:modelValue` | `string \| null` | Vue 3 `v-model` 更新 |
+| `confirm` | `string \| null` | 兼容旧版事件 |
+| `start` | `{ x, y }` | 开始绘制 |
+| `end` | `{ x, y }` | 结束绘制 |
+| `change` | `SignatureStatus` | 签名状态变化 |
+| `clear` | 无 | 清空画布 |
+| `undo` | `SignatureStatus` | 撤销成功 |
+| `redo` | `SignatureStatus` | 重做成功 |
+
+## 本地开发
 
 ```bash
-git clone https://github.com/langyuxiansheng/vue-sign-canvas.git
-```
-
-## Project setup
-
-```bash
-cd vue-sign-canvas
-
 npm install
-```
-
-### Compiles and hot-reloads for development
-
-```bash
 npm run dev
+npm run type-check
+npm run lib
 ```
 
-### Compiles and minifies for production
+`npm run lib` 会输出：
 
-```bash
-npm run build
-```
+- `lib/sign-canvas.js`
+- `lib/sign-canvas.umd.cjs`
+- `lib/sign-canvas.css`
+- `lib/types/**/*.d.ts`
 
-### Lints and fixes files
+## v2 变更
 
-```bash
-npm run lint
-```
-
-## 缺陷 & 后期计划
-
-> 目前还没有撤销回到上一步的操作,一旦输入错了就只有清除重写了(这个是之前去银行的时候,那个签名板是这样设计的);
-> 如果有需要还是可以考虑加上回到上一步的方法.
-
-## 更新日志
-
-> v1.1.9 紧急bug修复：
-> v1.1.7 bug修复及功能更新：增加enableResize 属性，可以通过 options.enableResize 来控制窗口变化的时候,是否自动调整画板大小,自动调整大小的时候会清空画板内容, 移动端使用的时候建议设置为false,感谢网友 “ruolunhui”，“turboceo”的建议与反馈。
-
-> v1.1.6 bug修复：
-> v1.1.5 bug修复：
-> v1.1.4 功能更新：增加全屏手写方案，可以通过 options.isFullScreen,和 options.isFullCover 属性控制,全屏模式下 canvasWidth 和 canvasHeight 属性设置无效,感谢网友 AFelicity”的建议与反馈。
-
-> v1.1.3 功能更新：增加高倍屏下，绘制会模糊的适配方案，可以通过 options.isDpr 属性进行开启或者关闭，感谢网友“Wong-Harry”的建议与反馈。
-
-> v1.1.2 优化部分逻辑代码.
-
-> v1.1.1 修复 background 拼写错误,感谢网友"shady-xia"的反馈和建议.
-
-> v1.1.0 本次更新调整较大,内容如下:
-
-- 调整局部组件注册的逻辑,全局使用的不收影响,如果有局部注册的朋友请调整一下.
-- 调整 demo 样式,增加动态配置项,属性支持动态响应了;
-- 修复滚动距离导致画点偏移的 bug,优化核心代码,感谢网友“Jayj1997”的建议和反馈。
-
-> v1.0.7 修复定位下的轨迹偏移,受 position 属性的影响的 bug。感谢网友“gexiaoyun” 和 “xingguyue”的反馈。
-
-> v1.0.6 修复多个 canvas 无法同时存在的 bug,修复移动端滚动后影响绘制轨迹的 bug。感谢网友“hytao2017”的反馈。
-
-> v1.0.5 优化部分代码。
-
-> v1.0.4 修复增加局部注册引入方式。
-
-> v1.0.3 修复“在移动端时,如果<sign-canvas>标签距离左侧有间距, 画笔和绘制的内容有偏移 #4”的 bug，感谢网友“xiaohuyahappy ”和“tzy19920902”的 bug 反馈见及修复建议。
-
-> v1.0.2 兼容移动端的可用性
-
-> v1.0.1 修复无法清空的 bug
-
-> v1.0.0 注册发布到 npmjs
-
-### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).
-
-## 横屏全屏模式下签名要怎么显示?
-
-```html
-<div class="user-sign">
-    <template v-if="sign">
-        <img class="sign-image" :src="sign" alt="" srcset="" />
-    </template>
-</div>
-
-<script>
-    //局部注册
-    import SignCanvas from "sign-canvas";
-    import util from "@util";
-    import { saveSignature } from "@/http";
-    export default {
-        name: "UserSign",
-        components: { SignCanvas },
-        data() {
-            return {
-                sign: null,
-            };
-        },
-    };
-</script>
-<style lang="scss" scoped>
-    .user-sign {
-        background: #e7e7e7;
-        height: 9.375rem;
-        position: relative;
-
-        .sign-image {
-            margin: 0 auto;
-            z-index: 9;
-            height: 100%;
-            transform: rotate(-90deg) scale(1.5);
-            display: block;
-        }
-    }
-</style>
-```
+- 这是不兼容旧版的重构升级，Vue 2 项目请继续使用 `sign-canvas@1` 或 `1.x` 分支。
+- 升级到 Vue 3 + TypeScript + Vite。
+- 使用 Pointer Events 统一 PC 和移动端输入，减少触点偏移问题。
+- `options` 改变时保留已有笔迹，切换颜色、线宽、DPR 不再清空画布。
+- 增加 `isEmpty()` / `getSignatureStatus()`，解决必填签名校验。
+- 增加 `fromDataURL()`，支持已有签名回显和继续编辑。
+- 增加 `readonly` / `disabled`。
+- 增加笔迹历史、撤销、重做和快捷键支持。
+- 增加自定义背景图合成，背景图会参与导出但不算真实签名。
+- 增加描写/临摹引导层，支持文字临摹和图片临摹，可通过 `guideEnabled` 开关控制。
+- 增加导出图片旋转，支持 `0 / 90 / 180 / 270` 度。
+- JPEG 导出默认铺白底，避免透明区域变黑。
+- 包内输出 `.d.ts`，支持 TS 项目类型提示。
