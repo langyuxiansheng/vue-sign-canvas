@@ -22,9 +22,9 @@
     "license": "MIT",
     "scripts": {
         "dev": "vite --host 0.0.0.0",
-        "build": "vite build",
+        "build": "vite build --mode demo",
         "type-check": "vue-tsc --noEmit",
-        "lib": "vue-tsc -p tsconfig.build.json --declaration --emitDeclarationOnly --outDir lib/types && vite build",
+        "lib": "vue-tsc -p tsconfig.build.json --declaration --emitDeclarationOnly --outDir lib/types && vite build --mode lib",
         "lint": "vue-tsc --noEmit"
     },
     "dependencies": {
