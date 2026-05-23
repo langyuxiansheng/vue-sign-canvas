@@ -4,6 +4,14 @@
 
 基于 Vue 3 + TypeScript 的手写签名板组件，支持 PC / 移动端指针输入、高清绘制、空签名判断、图片回显、只读模式、撤销重做、描写临摹、自定义背景图合成、导出旋转、JPEG 白底导出和类型提示。
 
+## 预览
+
+![桌面端预览](./images/preview-desktop.png)
+
+![移动端预览](./images/preview-mobile.png)
+
+![完整参数和导出预览](./images/preview-output.png)
+
 ## 版本说明
 
 `2.0.0` 是一次完整重构升级，不再兼容 `1.x` 的 Vue 2 项目和旧构建体系。

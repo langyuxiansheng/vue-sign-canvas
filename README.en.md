@@ -4,6 +4,14 @@
 
 A Vue 3 + TypeScript signature canvas component for desktop and mobile web apps. It supports high-DPI rendering, empty-signature detection, image replay, readonly mode, undo/redo, tracing guides, background image composition, export rotation, JPEG background fill, and full TypeScript typings.
 
+## Preview
+
+![Desktop preview](./images/preview-desktop.png)
+
+![Mobile preview](./images/preview-mobile.png)
+
+![Full settings and export preview](./images/preview-output.png)
+
 ## Version Notes
 
 `2.0.0` is a full rewrite and is not compatible with Vue 2 or the old `1.x` build setup.
