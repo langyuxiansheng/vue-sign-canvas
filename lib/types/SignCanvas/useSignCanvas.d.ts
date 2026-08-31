@@ -119,5 +119,7 @@ export declare function useSignCanvas(params: {
     handlePointerMove: (event: PointerEvent) => void;
     handlePointerUp: (event: PointerEvent) => void;
     handlePointerCancel: (event: PointerEvent) => void;
+    handlePointerLeave: (event: PointerEvent) => void;
+    handleLostPointerCapture: (event: PointerEvent) => void;
 };
 //# sourceMappingURL=useSignCanvas.d.ts.map

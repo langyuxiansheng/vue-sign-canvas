@@ -4,9 +4,17 @@
 
 基于 Vue 3 + TypeScript 的手写签名板组件，支持 PC / 移动端指针输入、高清绘制、空签名判断、图片回显、只读模式、撤销重做、描写临摹、自定义背景图合成、导出旋转、JPEG 白底导出和类型提示。
 
+## 预览
+
+![桌面端预览](./images/preview-desktop.png)
+
+![移动端预览](./images/preview-mobile.png)
+
+![完整参数和导出预览](./images/preview-output.png)
+
 ## 版本说明
 
-`2.0.0` 是一次完整重构升级，不再兼容 `1.x` 的 Vue 2 项目和旧构建体系。
+`2.0.0` 起是一次完整重构升级，不再兼容 `1.x` 的 Vue 2 项目和旧构建体系。
 
 - 新版本：Vue 3 + TypeScript + Vite。
 - 旧版本：Vue 2 + Vue CLI，继续使用 `1.x`。
@@ -17,6 +25,12 @@ npm i sign-canvas@1
 ```
 
 也可以切换到仓库的 `1.x` 分支查看旧版源码和文档。
+
+### v2.1.0
+
+- 修复 Chrome/Edge 移动端模拟和真实触摸屏下只能绘制一小截的问题。
+- 组件运行时会为 canvas 兜底写入 `touch-action: none` 和禁止选中文本的关键样式，降低业务侧漏引入 CSS 后触摸被浏览器手势打断的风险。
+- 加固 pointer capture 和多指触摸状态，触摸或手写笔移出 canvas 时不会提前截断当前笔迹。
 
 ## 兼容范围
 
