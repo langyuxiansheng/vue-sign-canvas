@@ -139,6 +139,8 @@ export function useSignCanvas(params: {
     handlePointerMove: (event: PointerEvent) => void;
     handlePointerUp: (event: PointerEvent) => void;
     handlePointerCancel: (event: PointerEvent) => void;
+    handlePointerLeave: (event: PointerEvent) => void;
+    handleLostPointerCapture: (event: PointerEvent) => void;
 } {
     const { canvasRef, props, emit } = params;
     const context = shallowRef<CanvasRenderingContext2D | null>(null);
@@ -156,6 +158,7 @@ export function useSignCanvas(params: {
     const guideImageSrc = ref('');
     const internalImage = ref<string | null>(EMPTY_IMAGE);
     const isDrawing = ref(false);
+    const activePointerId = ref<number | null>(null);
     const hasMoved = ref(false);
     const hasSignature = ref(false);
     const lastPoint = ref<CanvasPoint | null>(null);
@@ -181,6 +184,7 @@ export function useSignCanvas(params: {
         context.value = canvas.getContext('2d');
         resizeCanvas(canvas, cssSize.value, dpr.value);
         applyCoverStyle(canvas, options.value);
+        applyInputStyle(canvas);
         redraw();
     }
 
@@ -241,11 +245,12 @@ export function useSignCanvas(params: {
      * @param event 指针事件。
      */
     function handlePointerDown(event: PointerEvent): void {
-        if (isDisabled.value || !canvasRef.value) {
+        if (isDisabled.value || !canvasRef.value || isDrawing.value || !event.isPrimary) {
             return;
         }
         canvasRef.value.focus();
-        canvasRef.value.setPointerCapture?.(event.pointerId);
+        capturePointer(canvasRef.value, event.pointerId);
+        activePointerId.value = event.pointerId;
         isDrawing.value = true;
         hasMoved.value = false;
         currentStrokeBatch.value = [];
@@ -261,7 +266,7 @@ export function useSignCanvas(params: {
      * @param event 指针事件。
      */
     function handlePointerMove(event: PointerEvent): void {
-        if (!isDrawing.value || !lastPoint.value || !canvasRef.value) {
+        if (!isDrawing.value || !lastPoint.value || !canvasRef.value || !isActivePointer(event)) {
             return;
         }
         const point = getCanvasPoint(event, canvasRef.value);
@@ -280,36 +285,87 @@ export function useSignCanvas(params: {
      * @param event 指针事件。
      */
     function handlePointerUp(event: PointerEvent): void {
+        if (!isActivePointer(event)) {
+            return;
+        }
+        finishPointer(event, { commitPoint: true, releaseCapture: true });
+    }
+
+    /**
+     * 指针取消时结束本次绘制。取消事件不补点，避免浏览器手势打断时误生成签名。
+     *
+     * @param event 指针事件。
+     */
+    function handlePointerCancel(event: PointerEvent): void {
+        if (!isActivePointer(event)) {
+            return;
+        }
+        finishPointer(event, { commitPoint: false, releaseCapture: true });
+    }
+
+    /**
+     * 鼠标离开画布时收尾；触摸和手写笔依赖 pointer capture 继续派发事件，不能提前截断。
+     *
+     * @param event 指针事件。
+     */
+    function handlePointerLeave(event: PointerEvent): void {
+        if (!isActivePointer(event) || event.pointerType !== 'mouse') {
+            return;
+        }
+        finishPointer(event, { commitPoint: true, releaseCapture: true });
+    }
+
+    /**
+     * pointer capture 意外丢失时兜底收尾，避免内部状态卡在绘制中。
+     *
+     * @param event 指针事件。
+     */
+    function handleLostPointerCapture(event: PointerEvent): void {
+        if (!isActivePointer(event) || !isDrawing.value) {
+            return;
+        }
+        finishPointer(event, { commitPoint: false, releaseCapture: false });
+    }
+
+    /**
+     * 结束一次绘制。只有正常 pointerup 且没有移动时，才补一个圆点作为有效签名。
+     *
+     * @param event 指针事件。
+     * @param payload 收尾配置。
+     */
+    function finishPointer(event: PointerEvent, payload: { commitPoint: boolean; releaseCapture: boolean }): void {
         if (!isDrawing.value || !canvasRef.value) {
             return;
         }
         const point = getCanvasPoint(event, canvasRef.value);
         if (!hasMoved.value) {
             const stroke = createPointStroke(point);
-            strokes.value.push(stroke);
-            currentStrokeBatch.value.push(stroke);
-            drawStroke(stroke);
-            hasSignature.value = true;
+            if (payload.commitPoint) {
+                strokes.value.push(stroke);
+                currentStrokeBatch.value.push(stroke);
+                drawStroke(stroke);
+                hasSignature.value = true;
+            }
         }
         commitHistoryBatch();
-        canvasRef.value.releasePointerCapture?.(event.pointerId);
         isDrawing.value = false;
+        activePointerId.value = null;
         lastPoint.value = null;
+        if (payload.releaseCapture) {
+            releasePointer(canvasRef.value, event.pointerId);
+        }
         emitCurrentImage();
         emit('end', point);
         emit('change', getSignatureStatus());
     }
 
     /**
-     * 指针取消或离开时结束本次绘制，避免下一次下笔连接到旧坐标。
+     * 判断事件是否属于当前正在绘制的指针，避免触摸屏多指或模拟器重复事件打断轨迹。
      *
      * @param event 指针事件。
      */
-    function handlePointerCancel(event: PointerEvent): void {
-        if (!isDrawing.value) {
-            return;
-        }
-        handlePointerUp(event);
+    function isActivePointer(event: PointerEvent): boolean {
+        return activePointerId.value !== null && event.pointerId === activePointerId.value;
     }
 
     /**
@@ -324,6 +380,7 @@ export function useSignCanvas(params: {
         redoStack.value = [];
         currentStrokeBatch.value = [];
         sourceImage.value = null;
+        activePointerId.value = null;
         hasSignature.value = false;
         internalImage.value = EMPTY_IMAGE;
         redraw();
@@ -753,6 +810,8 @@ export function useSignCanvas(params: {
         await syncLayerImages();
         redraw();
         window.addEventListener('keydown', handleKeydown, false);
+        window.addEventListener('pointerup', handlePointerUp, false);
+        window.addEventListener('pointercancel', handlePointerCancel, false);
         const initialValue = props.modelValue || props.image;
         if (initialValue) {
             await fromDataURL(initialValue, { emit: false });
@@ -765,6 +824,8 @@ export function useSignCanvas(params: {
             clearTimeout(resizeTimer.value);
         }
         window.removeEventListener('keydown', handleKeydown, false);
+        window.removeEventListener('pointerup', handlePointerUp, false);
+        window.removeEventListener('pointercancel', handlePointerCancel, false);
     });
 
     return {
@@ -776,6 +837,8 @@ export function useSignCanvas(params: {
         handlePointerMove,
         handlePointerUp,
         handlePointerCancel,
+        handlePointerLeave,
+        handleLostPointerCapture,
         canvasClear,
         clear,
         undo,
@@ -804,6 +867,46 @@ function createOptions(
     previous: ResolvedSignCanvasOptions = DEFAULT_OPTIONS
 ): ResolvedSignCanvasOptions {
     return Object.assign({}, DEFAULT_OPTIONS, previous, incoming || {});
+}
+
+/**
+ * 写入触摸绘制所需的关键交互样式。部分业务项目只引入 JS 产物、不引入 CSS，
+ * 如果缺少 touch-action: none，Chrome/Edge 触摸会被页面手势打断成一小截。
+ *
+ * @param canvas 目标画布。
+ */
+function applyInputStyle(canvas: HTMLCanvasElement): void {
+    canvas.style.touchAction = 'none';
+    canvas.style.userSelect = 'none';
+    (canvas.style as CSSStyleDeclaration & { webkitUserSelect?: string }).webkitUserSelect = 'none';
+}
+
+/**
+ * 安全开启 pointer capture。部分触摸屏和模拟环境可能抛异常，不能因此中断绘制。
+ *
+ * @param canvas 目标画布。
+ * @param pointerId 指针 ID。
+ */
+function capturePointer(canvas: HTMLCanvasElement, pointerId: number): void {
+    try {
+        canvas.setPointerCapture?.(pointerId);
+    } catch {
+        // capture 失败时仍允许继续绘制，window 级 pointerup/pointercancel 会负责兜底收尾。
+    }
+}
+
+/**
+ * 安全释放 pointer capture，兼容 pointer 已经丢失或浏览器实现不完整的场景。
+ *
+ * @param canvas 目标画布。
+ * @param pointerId 指针 ID。
+ */
+function releasePointer(canvas: HTMLCanvasElement, pointerId: number): void {
+    try {
+        canvas.releasePointerCapture?.(pointerId);
+    } catch {
+        // 某些环境会在 pointercancel/lostpointercapture 后自动释放，再手动释放会抛异常。
+    }
 }
 
 /**

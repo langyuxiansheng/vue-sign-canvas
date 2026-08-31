@@ -9,7 +9,8 @@
         @pointermove.prevent.stop="handlePointerMove"
         @pointerup.prevent.stop="handlePointerUp"
         @pointercancel.prevent.stop="handlePointerCancel"
-        @pointerleave.prevent.stop="handlePointerCancel"
+        @pointerleave.prevent.stop="handlePointerLeave"
+        @lostpointercapture="handleLostPointerCapture"
     >
         您的浏览器不支持canvas技术,请升级浏览器!
     </canvas>
@@ -39,6 +40,8 @@ const {
     handlePointerMove,
     handlePointerUp,
     handlePointerCancel,
+    handlePointerLeave,
+    handleLostPointerCapture,
     canvasClear,
     clear,
     undo,
@@ -84,6 +87,7 @@ defineExpose<SignCanvasExpose>({
 .app-sign-canvas {
     display: block;
     touch-action: none;
+    -webkit-user-select: none;
     user-select: none;
 }
 

@@ -14,7 +14,7 @@ A Vue 3 + TypeScript signature canvas component for desktop and mobile web apps.
 
 ## Version Notes
 
-`2.0.0` is a full rewrite and is not compatible with Vue 2 or the old `1.x` build setup.
+Starting from `2.0.0`, this package is a full rewrite and is not compatible with Vue 2 or the old `1.x` build setup.
 
 - New version: Vue 3 + TypeScript + Vite.
 - Legacy version: Vue 2 + Vue CLI, available as `1.x`.
@@ -25,6 +25,12 @@ npm i sign-canvas@1
 ```
 
 You can also switch to the `1.x` branch for the old source code and documentation.
+
+### v2.1.0
+
+- Fixes interrupted drawing in Chrome/Edge mobile emulation and real touch-screen environments.
+- Applies the critical canvas interaction styles at runtime, including `touch-action: none` and text-selection prevention, reducing the risk of browser gestures interrupting touch drawing when the consumer forgets to import CSS.
+- Hardens pointer capture and active pointer tracking, so touch or pen input leaving the canvas does not prematurely cut off the current stroke.
 
 ## Compatibility
 
